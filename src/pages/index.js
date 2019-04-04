@@ -1,10 +1,10 @@
-import React from 'react';
-import { navigate } from 'gatsby';
-import { connect } from 'react-redux';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import React from "react";
+import { navigate } from "gatsby";
+import { connect } from "react-redux";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
-import BasicLayout from '@/layouts/basic';
+import BasicLayout from "@/layouts/basic";
 
 @connect(({ user }) => ({
   user: user.user,
@@ -12,7 +12,7 @@ import BasicLayout from '@/layouts/basic';
 }))
 class Index extends React.Component {
   state = {
-    boardName: ''
+    boardName: ""
   };
 
   handleChange = name => event => {
@@ -33,7 +33,7 @@ class Index extends React.Component {
   toLogout = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'user/logout',
+      type: "user/logout",
       payload: {}
     });
   };
@@ -71,7 +71,7 @@ class Index extends React.Component {
           id="outlined-name"
           label="Name"
           value={this.state.boardName}
-          onChange={this.handleChange('boardName')}
+          onChange={this.handleChange("boardName")}
           margin="normal"
           variant="outlined"
         />

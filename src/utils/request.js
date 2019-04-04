@@ -10,18 +10,18 @@
  * )
  */
 const request = async (url, { method, data }) => {
-  if (url === '/api/login') {
+  if (url === "/api/login") {
     return {
-      status: 'ok',
+      status: "ok",
       user: {
-        name: 'Nguyen Van Teo',
+        name: "Nguyen Van Teo",
         age: 21
       },
-      role: ['admin']
+      role: ["admin"]
     };
   } else {
     return {
-      status: 'error'
+      status: "error"
     };
   }
 };

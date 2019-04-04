@@ -1,8 +1,8 @@
-import createSagaMiddleware from 'redux-saga';
+import createSagaMiddleware from "redux-saga";
 
 function getGeneratorFunc() {
   try {
-    return Function('return function*() {}')();
+    return Function("return function*() {}")();
   } catch (e) {}
 }
 
@@ -14,7 +14,7 @@ const GeneratorFunction = generatorFunc
 function isGenerator(fn) {
   return (
     Object.getPrototypeOf(fn) === GeneratorFunction ||
-    Object.prototype.toString.call(fn) === '[object GeneratorFunction]'
+    Object.prototype.toString.call(fn) === "[object GeneratorFunction]"
   );
 }
 
@@ -30,10 +30,10 @@ const createSagaPlugin = (sagaMiddleware = createSagaMiddleware()) => ({
     }
   },
   onModel(model) {
-    if (typeof model.effects === 'undefined') return;
+    if (typeof model.effects === "undefined") return;
 
     const effects =
-      typeof model.effects === 'function'
+      typeof model.effects === "function"
         ? model.effects(this.dispatch)
         : model.effects;
 

@@ -1,12 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Router } from '@reach/router';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import React from "react";
+import { connect } from "react-redux";
+import { Router } from "@reach/router";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 
-import PrivateRoute from '@/components/PrivateRoute';
-import ProtectedView from '@/components/ProtectedView';
-import BasicLayout from '@/layouts/basic';
+import PrivateRoute from "@/components/PrivateRoute";
+import ProtectedView from "@/components/ProtectedView";
+import BasicLayout from "@/layouts/basic";
 
 @connect(({ board, loading }) => ({
   boardName: board.name,
@@ -15,7 +15,7 @@ import BasicLayout from '@/layouts/basic';
 }))
 class Board extends React.Component {
   state = {
-    newBoardName: ''
+    newBoardName: ""
   };
 
   handleChange = name => event => {
@@ -42,7 +42,7 @@ class Board extends React.Component {
   render() {
     const { boardAuthor, boardName, loading } = this.props;
     if (loading) {
-      return 'Loading';
+      return "Loading";
     }
 
     return (
@@ -53,7 +53,7 @@ class Board extends React.Component {
           id="outlined-name"
           label="Name"
           value={this.state.newBoardName}
-          onChange={this.handleChange('newBoardName')}
+          onChange={this.handleChange("newBoardName")}
           margin="normal"
           variant="outlined"
         />
@@ -67,7 +67,7 @@ class Board extends React.Component {
 }
 
 const BoardContainer = ({}) => (
-  <ProtectedView role={['admin']}>
+  <ProtectedView role={["admin"]}>
     <Board />
   </ProtectedView>
 );
