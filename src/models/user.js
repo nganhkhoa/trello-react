@@ -1,8 +1,8 @@
-import { navigate } from 'gatsby';
-import { delay, call, put } from 'redux-saga/effects';
+import { navigate } from "gatsby";
+import { delay, call, put } from "redux-saga/effects";
 
-import { fetchCurrent, login } from '@/services/user';
-import { setUser } from '@/utils/auth';
+import { fetchCurrent, login } from "@/services/user";
+import { setUser } from "@/utils/auth";
 
 export const user = {
   state: {
@@ -32,11 +32,11 @@ export const user = {
   },
   effects: {
     *fetchCurrent(payload) {
-      console.log('Fetch current User');
+      console.log("Fetch current User");
       yield delay(1000);
       const data = yield call(fetchCurrent, {});
       yield put({
-        type: 'user/set',
+        type: "user/set",
         payload: data
       });
     },
@@ -44,19 +44,19 @@ export const user = {
       console.log(`Login using ${username}:${password}`);
       yield delay(2000);
       const response = yield call(login, { username, password });
-      if (response.status === 'ok') {
+      if (response.status === "ok") {
         yield put({
-          type: 'user/set',
+          type: "user/set",
           payload: response
         });
-        navigate('/');
+        navigate("/");
       }
     },
     *logout({ name }) {
       console.log(`Logout`);
       yield delay(1000);
       yield put({
-        type: 'user/clear',
+        type: "user/clear",
         payload: {}
       });
     },

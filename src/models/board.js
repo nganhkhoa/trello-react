@@ -1,9 +1,9 @@
-import { delay, put } from 'redux-saga/effects';
+import { delay, put } from "redux-saga/effects";
 
 export const board = {
   state: {
-    name: '',
-    author: 'Board author'
+    name: "",
+    author: "Board author"
   },
   reducers: {
     set(state, { name }) {
@@ -15,7 +15,7 @@ export const board = {
       console.log(`Fetching board ${name}`);
       yield delay(2000);
       yield put({
-        type: 'board/set',
+        type: "board/set",
         payload: {
           name
         }
@@ -25,7 +25,7 @@ export const board = {
       console.log(`Change board name to ${name}`);
       yield delay(2000);
       yield put({
-        type: 'board/set',
+        type: "board/set",
         payload: {
           name
         }

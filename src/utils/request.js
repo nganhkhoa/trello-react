@@ -1,4 +1,4 @@
-import { getCurrentUser, getRole } from '@/utils/auth';
+import { getCurrentUser, getRole } from "@/utils/auth";
 
 /*
  * request(
@@ -15,24 +15,24 @@ const request = async (url, { method, data }) => {
   // fake api request
   // in reality, this one will get jwt from localStorage
   // sends with the request in header
-  if (url === '/api/me') {
+  if (url === "/api/me") {
     return {
-      status: 'ok',
+      status: "ok",
       user: getCurrentUser(),
       role: getRole()
     };
-  } else if (url === '/api/login') {
+  } else if (url === "/api/login") {
     return {
-      status: 'ok',
+      status: "ok",
       user: {
-        name: 'Nguyen Van Teo',
+        name: "Nguyen Van Teo",
         age: 21
       },
-      role: ['admin']
+      role: ["admin"]
     };
   } else {
     return {
-      status: 'error'
+      status: "error"
     };
   }
 };
