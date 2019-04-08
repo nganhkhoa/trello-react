@@ -1,5 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.LOGIN_OK = 'login ok';
 exports.REGISTER_OK = 'register ok';
 exports.UPDATE_USER_OK = 'update ok';
