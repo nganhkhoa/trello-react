@@ -15,7 +15,7 @@
     "cross-env": "^5.2.0",
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
-    "gatsby": "^2.0.0",
+    "gatsby": "^2.4.2",
     "gatsby-plugin-material-ui": "^1.2.4",
     "moment": "^2.24.0",
     "prettier": "^1.17.0",
