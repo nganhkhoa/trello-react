@@ -9,8 +9,8 @@ class TrelloCard extends React.Component {
   onClick = e => {
     var { dispatch, card } = this.props;
     dispatch({
-      type: 'card/toggleModal', // toggle modal detail card
-      payload: { card }
+      type: 'card/getCardRequest', // toggle modal detail card
+      payload: { _id: card._id }
     });
     dispatch({
       type: 'logCard/fetchLogOfCard',
@@ -38,7 +38,13 @@ class TrelloCard extends React.Component {
     };
 
     const { card } = this.props;
-    const { title, members, comments, labels, archived } = card;
+    const {
+      title = '',
+      members = [],
+      comments = [],
+      labels = [],
+      archived = false
+    } = card;
     return (
       <Card style={styles.cardContainer} onClick={this.onClick}>
         <CardContent>

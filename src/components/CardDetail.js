@@ -205,6 +205,7 @@ class CardDetail extends React.Component {
     memberName: '' // member name is clicked avatar
   };
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
     if (nextProps.currentCard) {
       var {
         description,
@@ -216,7 +217,9 @@ class CardDetail extends React.Component {
         dateCreated,
         ownerId,
         archived,
-        members
+        members,
+        comments,
+        logCards
       } = nextProps.currentCard;
       this.setState({
         open: nextProps.showDetail,
@@ -229,7 +232,9 @@ class CardDetail extends React.Component {
         _id,
         ownerId,
         archived,
-        members
+        members,
+        comments,
+        logCards
       });
     } else this.setState({ open: nextProps.showDetail });
   }
@@ -286,31 +291,33 @@ class CardDetail extends React.Component {
       ownerId: currentUser._id,
       fileUrl: ''
     };
-    dispatch({
-      type: 'comment/addCommentRequest',
-      payload: { body: comment }
-    });
-    dispatch({
-      type: 'comment/fetchCommentOfCard',
-      payload: { cardId: currentCard._id }
-    });
+    (async () => {
+      await dispatch({
+        type: 'comment/addCommentRequest',
+        payload: { body: comment }
+      });
+      dispatch({
+        // why it delay ?
+        type: 'comment/fetchCommentOfCard',
+        payload: { cardId: currentCard._id }
+      });
+    })();
+
     this.setState({ commentText: '' });
   };
 
   handleClose = () => {
     this.setState({ open: false });
-    var { dispatch, currentCard, boardInfo } = this.props;
+    var { dispatch, boardInfo } = this.props;
     dispatch({
       type: 'card/toggleModal', // toggle modal detail card
       payload: {}
     });
-    // after close detail modal => update card of list
+    // update  card   if modified
     dispatch({
-      // reload list
-      type: 'card/fetchCardOfListFromBoard',
+      type: 'list/fetchListOfBoard',
       payload: {
-        boardId: boardInfo._id,
-        listId: currentCard.listId
+        boardId: boardInfo._id
       }
     });
   };
@@ -603,7 +610,7 @@ class CardDetail extends React.Component {
                     {' '}
                     access_time{' '}
                   </i>
-                  Deadline: {deadline}
+                  Deadline: {deadline === '' ? deadline : 'Chưa có deadline'}
                 </Typography>
                 <hr />
                 <Typography
@@ -620,11 +627,14 @@ class CardDetail extends React.Component {
                     onClick={() => this.setState({ isEditDescription: true })}
                     className="material-icons md-18"
                   >
-                    edit
+                    {' '}
+                    edit{' '}
                   </i>
                 </Typography>
 
-                <Typography gutterBottom>{description}</Typography>
+                <Typography gutterBottom>
+                  {description === '' ? description : 'Chưa có mô tả'}
+                </Typography>
 
                 {formEditDescription}
 
@@ -678,14 +688,17 @@ class CardDetail extends React.Component {
                   Các bình luận{' '}
                 </Typography>
 
-                {comments.map(({ content, cardId, _id }) => (
+                {comments.map(({ content, ownerId, cardId, _id }) => (
                   <Comment
                     content={content}
+                    username={ownerId.username}
+                    imageUrl={ownerId.imageUrl}
                     cardId={cardId}
                     key={_id}
                     _id={_id}
                   />
                 ))}
+
                 <Typography
                   gutterBottom
                   variant="subtitle1"
@@ -696,8 +709,14 @@ class CardDetail extends React.Component {
                   </i>{' '}
                   Hoạt động{' '}
                 </Typography>
-                {logCards.map(({ action, cardId, _id }) => (
-                  <LogCard action={action} cardId={cardId} key={_id} />
+                {logCards.map(({ action, cardId, _id, ownerId }) => (
+                  <LogCard
+                    action={action}
+                    cardId={cardId}
+                    key={_id}
+                    imageUrl={ownerId.imageUrl}
+                    username={ownerId.username}
+                  />
                 ))}
               </Grid>
               <Grid item xs={3}>

@@ -1,15 +1,22 @@
 import { navigate } from 'gatsby';
 import { delay, call, put } from 'redux-saga/effects';
 
-import { login, fetchCurrentUser, fetchUserBoard } from '@/services/user';
+import {
+  login,
+  fetchCurrentUser,
+  fetchUserBoard,
+  fetchAllUsername
+} from '@/services/user';
 import { setUser } from '@/utils/auth';
+import { LOGIN_OK } from '@/utils/return_messages';
 
 export const user = {
   state: {
     status: undefined,
     user: {},
     role: [],
-    board: []
+    board: [],
+    allUsername: [] // contain all username to use for add member form
   },
 
   reducers: {
@@ -21,11 +28,14 @@ export const user = {
         role
       };
     },
-    myboard(state, { board }) {
-      return { ...state, board };
+    myboard(state, { boards }) {
+      return { ...state, board: boards };
+    },
+    setUsernames(state, { usernames }) {
+      return { ...state, allUsername: usernames };
     },
     clear(state) {
-      setUser();
+      setUser({});
       return {
         status: undefined,
         user: {},
@@ -37,27 +47,41 @@ export const user = {
   effects: {
     *fetchCurrentUser() {
       console.log('Fetch current User');
-      const data = yield call(fetchCurrentUser);
+      const {
+        user: { role, ...user }
+      } = yield call(fetchCurrentUser);
       yield put({
         type: 'user/set',
-        payload: data
+        payload: {
+          status: true,
+          user,
+          role: [role]
+        }
+      });
+      yield put({
+        type: 'user/fetchUserBoard',
+        payload: { userId: user._id }
       });
     },
-    *fetchUserBoard() {
-      const { board } = yield call(fetchUserBoard);
+    *fetchUserBoard({ userId }) {
+      const { boards } = yield call(fetchUserBoard, { query: userId });
       yield put({
         type: 'user/myboard',
-        payload: { board }
+        payload: { boards }
       });
     },
     *login({ username, password }) {
       console.log(`Login using ${username}:${password}`);
-      const response = yield call(login, { data: { username, password } });
-      if (response.status === 'ok') {
-        yield call(setUser, response);
+      const {
+        status,
+        user: { role, ...user },
+        token
+      } = yield call(login, { data: { username, password } });
+      if (status === LOGIN_OK) {
+        yield call(setUser, { user, role: [role], token });
         yield put({
           type: 'user/set',
-          payload: response
+          payload: { status, user, role: [role] }
         });
         navigate('/');
       }
@@ -72,6 +96,16 @@ export const user = {
     },
     *register(payload) {
       yield delay(2000);
+    },
+    *fetchAllUsername() {
+      // call api query all username in db
+      console.log('fetchUserMember');
+      const { usernames } = yield call(fetchAllUsername);
+      console.log(usernames);
+      yield put({
+        type: 'user/setUsernames',
+        payload: { usernames }
+      });
     }
   }
 };
