@@ -76,12 +76,14 @@ const styles = theme => ({
 class BasicLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { openDiaglogRemove: false, isLogin:props.user.username!==undefined }
+    this.state = {
+      openDiaglogRemove: false,
+      isLogin: props.user.username !== undefined
+    };
   }
-  componentWillReceiveProps(props)
-  {
-    if(props.user.username)this.setState({isLogin:true});
-    else this.setState({isLogin:false}); 
+  componentWillReceiveProps(props) {
+    if (props.user.username) this.setState({ isLogin: true });
+    else this.setState({ isLogin: false });
   }
   toLogin = () => {
     navigate(`/auth/login`);
@@ -109,14 +111,16 @@ class BasicLayout extends React.Component {
     this.setState({ openDiaglogRemove: false });
   };
   render() {
-    const {  classes, board = [] } = this.props;
-    var {isLogin} =this.state;  
+    const { classes, board = [] } = this.props;
+    var { isLogin } = this.state;
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
         <main>
-          <div className={classes.heroUnit}>{isLogin===false?<Welcome/>:null} </div>
+          <div className={classes.heroUnit}>
+            {isLogin === false ? <Welcome /> : null}{' '}
+          </div>
           {this.props.children !== undefined ? (
             this.props.children
           ) : (
@@ -135,36 +139,47 @@ class BasicLayout extends React.Component {
                         modelView,
                         ownerId
                       }) => (
-                          <Grid item key={_id} sm={6} md={4} lg={3}>
-                            <Card
-                              className={classes.card}
+                        <Grid item key={_id} sm={6} md={4} lg={3}>
+                          <Card className={classes.card}>
+                            <CardHeader
+                              action={
+                                <IconButton
+                                  onClick={() => this.handleClickOpen(_id)}
+                                >
+                                  <DeleteForeverIcon />
+                                </IconButton>
+                              }
+                              title={name}
+                              subheader={dateFormat(
+                                new Date(dateCreated),
+                                'dddd, mmmm dS, yyyy'
+                              )}
+                              style={{ backgroundColor: '#e0ddd0' }}
+                            />
+
+                            <CardMedia
+                              className={classes.cardMedia}
+                              image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
+                              title="Image title"
+                              onClick={() => this.onSubmit(_id)}
+                            />
+                            <CardContent
+                              className={classes.cardContent}
+                              style={{ backgroundColor: '#e0ddd0' }}
                             >
-                              <CardHeader
-                                action={
-                                  <IconButton onClick={()=>this.handleClickOpen(_id)}>
-                                    <DeleteForeverIcon />
-                                  </IconButton>
-                                }
-                                title={name}
-                                subheader={dateFormat(new Date(dateCreated), "dddd, mmmm dS, yyyy")}
-                                style={{ backgroundColor: '#e0ddd0' }}
-                              />
-
-
-                              <CardMedia
-                                className={classes.cardMedia}
-                                image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
-                                title="Image title"
-                                onClick={() => this.onSubmit(_id)}
-                              />
-                              <CardContent className={classes.cardContent} style={{ backgroundColor: '#e0ddd0' }}>
-                                <Typography style={{ fontSize: 30 }}>
-                                  <i className="material-icons" style={{ fontSize: 40 }}>
-                                    person_outline</i> {members.length}  </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        )
+                              <Typography style={{ fontSize: 30 }}>
+                                <i
+                                  className="material-icons"
+                                  style={{ fontSize: 40 }}
+                                >
+                                  person_outline
+                                </i>{' '}
+                                {members.length}{' '}
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      )
                     )}
                   </Grid>
                 </div>
