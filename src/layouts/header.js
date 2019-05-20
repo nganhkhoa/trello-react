@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { navigate } from 'gatsby';
-
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Button from '@material-ui/core/Button';
@@ -15,21 +14,26 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Icon from '@material-ui/core/Icon';
 import Popover from '@material-ui/core/Popover';
-
+import SvgIcon from '@material-ui/core/SvgIcon';
 import PopupState, {
   bindTrigger,
   bindPopover
 } from 'material-ui-popup-state/index';
-
+function HomeIcon(props) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+    </SvgIcon>
+  );
+}
 const styles = theme => ({
   root: {
-    width: '100%',
+    width: '100%'
   },
   grow: {
     flexGrow: 1
@@ -127,12 +131,11 @@ class PrimarySearchAppBar extends React.Component {
     background: 'white',
     boardName: '',
     isPublic: true,
-    isLogin:this.props.currentUser.username!==undefined
+    isLogin: this.props.currentUser.username !== undefined
   };
-  componentWillReceiveProps(props)
-  {
-    if(props.currentUser.username)this.setState({isLogin:true});
-    else this.setState({isLogin:false}); 
+  componentWillReceiveProps(props) {
+    if (props.currentUser.username) this.setState({ isLogin: true });
+    else this.setState({ isLogin: false });
   }
   toLogout = () => {
     this.setState({ anchorEl: null });
@@ -201,7 +204,7 @@ class PrimarySearchAppBar extends React.Component {
     navigate(`/auth/signUp`);
   };
   render() {
-    const { anchorEl, mobileMoreAnchorEl,isLogin } = this.state;
+    const { anchorEl, mobileMoreAnchorEl, isLogin } = this.state;
     const { classes } = this.props;
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -447,14 +450,17 @@ class PrimarySearchAppBar extends React.Component {
 
     return (
       <div className={classes.root}>
-        <AppBar position="static" style={{  background:'linear-gradient(135deg, green, #5067C5)'}}>
+        <AppBar
+          position="static"
+          style={{ background: 'linear-gradient(135deg, green, #5067C5)' }}
+        >
           <Toolbar>
             <IconButton
               className={classes.menuButton}
               color="inherit"
               aria-label="Open drawer"
             >
-              <MenuIcon />
+              <HomeIcon fontSize="large" onClick={() => navigate('/')} />
             </IconButton>
             <Typography
               className={classes.title}
@@ -469,238 +475,258 @@ class PrimarySearchAppBar extends React.Component {
             </Typography>
 
             <div className={classes.grow} />
-            {isLogin===true?
-            <div className={classes.sectionDesktop}>
-              {/* form add board */}
-              <PopupState variant="popover" popupId="demo-popup-popover">
-                {popupState => (
-                  <div>
-                    <IconButton color="inherit" {...bindTrigger(popupState)}>
-                      <Icon
-                        className={classes.icon}
-                        color="error"
-                        style={{ fontSize: 40 }}
+            {isLogin === true ? (
+              <div className={classes.sectionDesktop}>
+                {/* form add board */}
+                <PopupState variant="popover" popupId="demo-popup-popover">
+                  {popupState => (
+                    <div>
+                      <IconButton color="inherit" {...bindTrigger(popupState)}>
+                        <Icon
+                          className={classes.icon}
+                          color="error"
+                          style={{ fontSize: 40 }}
+                        >
+                          {' '}
+                          add_circle{' '}
+                        </Icon>
+                      </IconButton>
+
+                      <Popover
+                        {...bindPopover(popupState)}
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'center'
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'center'
+                        }}
                       >
-                        {' '}
-                        add_circle{' '}
-                      </Icon>
-                    </IconButton>
-
-                    <Popover
-                      {...bindPopover(popupState)}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center'
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center'
-                      }}
-                    >
-                      <div style={customStyle.textField}>
-                        <TextField
-                          margin="dense"
-                          label="Tên bảng"
-                          style={styles.textField}
-                          value={this.state.boardName}
-                          fullWidth
-                          onChange={this.handleChange}
-                          variant="outlined"
-                          name="boardName"
-                        />
-                        <br />
-                        <Typography
-                          gutterBottom
-                          variant="subtitle1"
-                          style={customStyle.title}
-                        >
-                          <Checkbox
-                            checked={this.state.isPublic}
-                            name="isPublic"
+                        <div style={customStyle.textField}>
+                          <TextField
+                            margin="dense"
+                            label="Tên bảng"
+                            style={styles.textField}
+                            value={this.state.boardName}
+                            fullWidth
                             onChange={this.handleChange}
+                            variant="outlined"
+                            name="boardName"
                           />
-                          Công khai
-                        </Typography>
-                        <Typography
-                          gutterBottom
-                          variant="subtitle1"
-                          style={customStyle.title}
-                        >
-                          Màu nền
-                        </Typography>
-                        <br />
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'red',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'yellow',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'orange',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>{' '}
-                        <br />
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'blue',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'green',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: '#d27af4',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>{' '}
-                        <br />
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: '#1eedab',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'gray',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          {' '}
-                        </Button>
-                        <Button
-                          onClick={this.clickLabel}
-                          name="label"
-                          variant="contained"
-                          style={{
-                            backgroundColor: 'white',
-                            height: 35,
-                            width: 100
-                          }}
-                          className={classes.button}
-                        >
-                          <i style={{ float: 'right' }}>✔</i>
-                        </Button>
-                        <br />
-                        <Button
-                          style={customStyle.button}
-                          size="small"
-                          variant="contained"
-                          color="primary"
-                          onClick={() => {
-                            if (this.state.boardName !== '') {
-                              popupState.close();
-                              this.createBoard();
-                            }
-                          }}
-                        >
-                          Tạo bảng
-                        </Button>
-                      </div>
-                    </Popover>
-                  </div>
-                )}
-              </PopupState>
+                          <br />
+                          <Typography
+                            gutterBottom
+                            variant="subtitle1"
+                            style={customStyle.title}
+                          >
+                            <Checkbox
+                              checked={this.state.isPublic}
+                              name="isPublic"
+                              onChange={this.handleChange}
+                            />
+                            Công khai
+                          </Typography>
+                          <Typography
+                            gutterBottom
+                            variant="subtitle1"
+                            style={customStyle.title}
+                          >
+                            Màu nền
+                          </Typography>
+                          <br />
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'red',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'yellow',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'orange',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>{' '}
+                          <br />
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'blue',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'green',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: '#d27af4',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>{' '}
+                          <br />
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: '#1eedab',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'gray',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            {' '}
+                          </Button>
+                          <Button
+                            onClick={this.clickLabel}
+                            name="label"
+                            variant="contained"
+                            style={{
+                              backgroundColor: 'white',
+                              height: 35,
+                              width: 100
+                            }}
+                            className={classes.button}
+                          >
+                            <i style={{ float: 'right' }}>✔</i>
+                          </Button>
+                          <br />
+                          <Button
+                            style={customStyle.button}
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              if (this.state.boardName !== '') {
+                                popupState.close();
+                                this.createBoard();
+                              }
+                            }}
+                          >
+                            Tạo bảng
+                          </Button>
+                        </div>
+                      </Popover>
+                    </div>
+                  )}
+                </PopupState>
 
-              <IconButton color="inherit">
-                <Badge badgeContent={17} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
-              <IconButton
-                aria-owns={isMenuOpen ? 'material-appbar' : undefined}
-                aria-haspopup="true"
-                onClick={this.handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-            </div>:null}
-            {isLogin===true?
-            <div className={classes.sectionMobile}>
-              <IconButton
-                aria-haspopup="true"
-                onClick={this.handleMobileMenuOpen}
-                color="inherit"
-              >
-                <MoreIcon />
-              </IconButton>
-            </div>:null}
-            {isLogin===true?null:
-            <div>
-            <Button variant="contained" style={{marginTop:-10,backgroundColor:'green'}}
-                  color="primary" onClick={this.toLogin}>Đăng nhập</Button>
-            <Button style={{marginTop:-10,backgroundColor:'transparent',color:'white'}}   variant="outlined" onClick={this.toSignUp}>Đăng kí</Button></div>}
+                <IconButton color="inherit">
+                  <Badge badgeContent={17} color="secondary">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  aria-owns={isMenuOpen ? 'material-appbar' : undefined}
+                  aria-haspopup="true"
+                  onClick={this.handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </div>
+            ) : null}
+            {isLogin === true ? (
+              <div className={classes.sectionMobile}>
+                <IconButton
+                  aria-haspopup="true"
+                  onClick={this.handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </div>
+            ) : null}
+            {isLogin === true ? null : (
+              <div>
+                <Button
+                  variant="contained"
+                  style={{ marginTop: -10, backgroundColor: 'green' }}
+                  color="primary"
+                  onClick={this.toLogin}
+                >
+                  Đăng nhập
+                </Button>
+                <Button
+                  style={{
+                    marginTop: -10,
+                    backgroundColor: 'transparent',
+                    color: 'white'
+                  }}
+                  variant="outlined"
+                  onClick={this.toSignUp}
+                >
+                  Đăng kí
+                </Button>
+              </div>
+            )}
           </Toolbar>
         </AppBar>
-        
+
         {renderMenu}
         {renderMobileMenu}
       </div>

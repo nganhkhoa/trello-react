@@ -20,9 +20,10 @@ export const card = {
     currentCard: {}
   },
   reducers: {
-    putListCard(state, { card }) { 
+    putListCard(state, { card }) {
       const { listId } = card;
-      const tem=state.cards[card.listId]===undefined?[]:state.cards[card.listId]; 
+      const tem =
+        state.cards[card.listId] === undefined ? [] : state.cards[card.listId];
       return {
         ...state,
         cards: {

@@ -51,7 +51,7 @@ const styles = theme => ({
     }
   },
   cardGrid: {
-    padding: `${theme.spacing.unit * 8}px 0`
+    padding: `10px 0`
   },
   card: {
     height: '100%',
@@ -66,7 +66,7 @@ const styles = theme => ({
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing.unit * 6
+    padding: theme.spacing.unit * 2
   }
 });
 @connect(({ user }) => ({
@@ -76,12 +76,14 @@ const styles = theme => ({
 class BasicLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { openDiaglogRemove: false, isLogin:props.user.username!==undefined }
+    this.state = {
+      openDiaglogRemove: false,
+      isLogin: props.user.username !== undefined
+    };
   }
-  componentWillReceiveProps(props)
-  {
-    if(props.user.username)this.setState({isLogin:true});
-    else this.setState({isLogin:false}); 
+  componentWillReceiveProps(props) {
+    if (props.user.username) this.setState({ isLogin: true });
+    else this.setState({ isLogin: false });
   }
   toLogin = () => {
     navigate(`/auth/login`);
@@ -109,66 +111,103 @@ class BasicLayout extends React.Component {
     this.setState({ openDiaglogRemove: false });
   };
   render() {
-    const {  classes, board = [] } = this.props;
-    var {isLogin} =this.state;  
+    const { classes, board = [] } = this.props;
+    var { isLogin } = this.state;
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
         <main>
-          <div className={classes.heroUnit}>{isLogin===false?<Welcome/>:null} </div>
+          <div className={classes.heroUnit}>
+            {isLogin === false ? <Welcome /> : null}{' '}
+          </div>
           {this.props.children !== undefined ? (
             this.props.children
           ) : (
             <div className={classNames(classes.layout, classes.cardGrid)}>
-              <div className={classNames(classes.layout, classes.cardGrid)}>
-                <div className={classNames(classes.layout, classes.cardGrid)}>
-                  <Grid container spacing={40}>
-                    {board.map(
-                      ({
-                        _id,
-                        background,
-                        dateCreated,
-                        list,
-                        members,
-                        name,
-                        modelView,
-                        ownerId
-                      }) => (
-                          <Grid item key={_id} sm={6} md={4} lg={3}>
-                            <Card
-                              className={classes.card}
-                            >
-                              <CardHeader
-                                action={
-                                  <IconButton onClick={()=>this.handleClickOpen(_id)}>
-                                    <DeleteForeverIcon />
-                                  </IconButton>
-                                }
-                                title={name}
-                                subheader={dateFormat(new Date(dateCreated), "dddd, mmmm dS, yyyy")}
-                                style={{ backgroundColor: '#e0ddd0' }}
-                              />
-
-
-                              <CardMedia
-                                className={classes.cardMedia}
-                                image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
-                                title="Image title"
-                                onClick={() => this.onSubmit(_id)}
-                              />
-                              <CardContent className={classes.cardContent} style={{ backgroundColor: '#e0ddd0' }}>
-                                <Typography style={{ fontSize: 30 }}>
-                                  <i className="material-icons" style={{ fontSize: 40 }}>
-                                    person_outline</i> {members.length}  </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        )
-                    )}
+              {isLogin === true && board.length !== 0 ? (
+                <Typography style={{ fontSize: 40 }}>
+                  {' '}
+                  Các dự án tham gia{' '}
+                </Typography>
+              ) : null}
+              <br />
+              <Grid container spacing={40}>
+                {isLogin === true && board.length === 0 ? (
+                  <Grid sm={12} md={12} lg={12}>
+                    <br />
+                    <Typography variant="h3" align="center">
+                      Chào mừng đến với Trello!
+                    </Typography>
+                    <Typography variant="h4" align="center">
+                      Tạo dự án đầu tiên của mình ngay để trải nghiệm
+                    </Typography>
+                    <br />
+                    <img
+                      style={{
+                        display: 'block',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        width: '70%'
+                      }}
+                      src="http://tinyurl.com/y4fr43aa"
+                    />
                   </Grid>
-                </div>
-              </div>
+                ) : null}
+                {board.map(
+                  ({
+                    _id,
+                    background,
+                    dateCreated,
+                    list,
+                    members,
+                    name,
+                    modelView,
+                    ownerId
+                  }) => (
+                    <Grid item key={_id} sm={6} md={4} lg={3}>
+                      <Card className={classes.card}>
+                        <CardHeader
+                          action={
+                            <IconButton
+                              onClick={() => this.handleClickOpen(_id)}
+                            >
+                              <DeleteForeverIcon />
+                            </IconButton>
+                          }
+                          title={name}
+                          subheader={dateFormat(
+                            new Date(dateCreated),
+                            'dddd, mmmm dS, yyyy'
+                          )}
+                          style={{ backgroundColor: '#e0ddd0' }}
+                        />
+
+                        <CardMedia
+                          className={classes.cardMedia}
+                          image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
+                          title="Image title"
+                          onClick={() => this.onSubmit(_id)}
+                        />
+                        <CardContent
+                          className={classes.cardContent}
+                          style={{ backgroundColor: '#e0ddd0' }}
+                        >
+                          <Typography style={{ fontSize: 30 }}>
+                            <i
+                              className="material-icons"
+                              style={{ fontSize: 40 }}
+                            >
+                              person_outline
+                            </i>{' '}
+                            {members.length}{' '}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  )
+                )}
+              </Grid>
             </div>
           )}
           <Dialog
@@ -211,7 +250,6 @@ class BasicLayout extends React.Component {
             Thực tập công nghệ phần mềm
           </Typography>
         </footer> */}
-        {/* End footer */}
       </React.Fragment>
     );
   }
