@@ -1,16 +1,26 @@
 import { call, put } from 'redux-saga/effects';
 
-import { fetchListOfBoard, addListOfBoard,editListOfBoard } from '@/services/list';
+import {
+  fetchListOfBoard,
+  addListOfBoard,
+  editListOfBoard,
+  deleteListOfBoard
+} from '@/services/list';
 
 export const list = {
   state: {
     lists: []
   },
   reducers: {
-    editList(state, { list }){
+    deleteList(state, { _id }) {
       return {
-        lists: state.lists.map(x => x._id === list._id ? list : x)
-      }
+        lists: state.lists.filter(list => list._id !== _id)
+      };
+    },
+    editList(state, { list }) {
+      return {
+        lists: state.lists.map(x => (x._id === list._id ? list : x))
+      };
     },
     putList(state, { list }) {
       console.log('list model: ', list);
@@ -22,9 +32,9 @@ export const list = {
       // console.log(lists);
       return { ...state, lists };
     },
-    clear(state, {  }) {
-      return { ...state, lists:[] };
-    },
+    clear(state) {
+      return { ...state, lists: [] };
+    }
   },
   effects: {
     *fetchListOfBoard({ boardId }) {
@@ -50,7 +60,7 @@ export const list = {
       });
       yield put({
         type: 'card/fromList',
-        payload: { cardItems }  
+        payload: { cardItems }
       });
     },
     *addListRequest({ name, ownerId, boardId }) {
@@ -70,8 +80,8 @@ export const list = {
         }
       });
     },
-    *editListRequest({_id, name, archived}){
-      const {list} = yield call(editListOfBoard,{
+    *editListRequest({ _id, name, archived }) {
+      const { list } = yield call(editListOfBoard, {
         data: {
           _id,
           name,
@@ -82,8 +92,22 @@ export const list = {
         type: 'list/editList',
         payload: {
           list
-        } 
-      })
+        }
+      });
+    },
+    *deleteListRequest({ _id }) {
+      console.log(`delete list  #${_id}`);
+      yield call(deleteListOfBoard, {
+        params: {
+          _id: _id
+        }
+      });
+      yield put({
+        type: 'list/deleteList',
+        payload: {
+          _id
+        }
+      });
     }
   }
 };

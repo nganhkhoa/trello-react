@@ -197,9 +197,9 @@ class DialogForm extends React.Component {
     }
   }
   move = () => {
-    var { currentCard, dispatch, currentUser, boardInfo } = this.props;
+    var { currentCard, dispatch, currentUser } = this.props;
     var { order, listId } = this.state;
-    if (order === null || listId === null) return false; 
+    if (order === null || listId === null) return false;
     dispatch({
       type: 'card/moveCardRequest',
       payload: {

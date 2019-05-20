@@ -73,7 +73,6 @@ const styles = theme => ({
   user: user.user,
   board: user.board
 }))
-
 class BasicLayout extends React.Component {
   constructor(props) {
     super(props);
@@ -93,15 +92,15 @@ class BasicLayout extends React.Component {
   onSubmit = boardId => {
     navigate(`/board/${boardId}`);
   };
-  handleClickOpen = (_id) => { 
-    this.setState({ openDiaglogRemove: true,idPrepareRemove:_id });
+  handleClickOpen = _id => {
+    this.setState({ openDiaglogRemove: true, idPrepareRemove: _id });
   };
   handleClose = () => {
     this.setState({ openDiaglogRemove: false });
   };
-  onDelete = (_id) => {
+  onDelete = _id => {
     console.log(_id);
-    var {  dispatch, user } = this.props;
+    var { dispatch, user } = this.props;
     var body = { ownerId: user._id };
     dispatch({
       type: 'board/deleteBoardRequest',
@@ -121,6 +120,7 @@ class BasicLayout extends React.Component {
           {this.props.children !== undefined ? (
             this.props.children
           ) : (
+            <div className={classNames(classes.layout, classes.cardGrid)}>
               <div className={classNames(classes.layout, classes.cardGrid)}>
                 <div className={classNames(classes.layout, classes.cardGrid)}>
                   <Grid container spacing={40}>
@@ -169,24 +169,30 @@ class BasicLayout extends React.Component {
                   </Grid>
                 </div>
               </div>
-            )}
+            </div>
+          )}
           <Dialog
             open={this.state.openDiaglogRemove}
-            onClose={this.handleClose} 
+            onClose={this.handleClose}
           >
-            <DialogTitle  >Remove board</DialogTitle>
+            <DialogTitle>Remove board</DialogTitle>
             <DialogContent>
               <DialogContentText>
                 Are you sure to remove this board pernamently?
-               </DialogContentText>
+              </DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={this.handleClose} color="primary">
                 Cancel
-             </Button>
-              <Button onClick={() => { this.onDelete(this.state.idPrepareRemove) }} color="primary">
+              </Button>
+              <Button
+                onClick={() => {
+                  this.onDelete(this.state.idPrepareRemove);
+                }}
+                color="primary"
+              >
                 Delete
-               </Button>
+              </Button>
             </DialogActions>
           </Dialog>
         </main>

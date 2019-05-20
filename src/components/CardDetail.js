@@ -408,9 +408,9 @@ class CardDetail extends React.Component {
     var formEditDescription = isEditDescription
       ? this.formEdit('description', description)
       : null;
-      if(deadline) 
-      var Deadline= dateFormat(new Date(deadline), "dddd, mmmm dS, yyyy, h:MM:ss TT") ;
-      else    var Deadline='Chưa có deadline';
+    var Deadline = deadline
+      ? dateFormat(new Date(deadline), 'dddd, mmmm dS, yyyy, h:MM:ss TT')
+      : 'Chưa có deadline';
     return (
       <div>
         <Dialog
@@ -725,16 +725,18 @@ class CardDetail extends React.Component {
                   </i>{' '}
                   Hoạt động{' '}
                 </Typography>
-                {logCards.map(({ action, cardId, _id, ownerId,dateCreated }) => (
-                  <LogCard
-                    action={action}
-                    cardId={cardId}
-                    key={_id}
-                    dateCreated={dateCreated}
-                    imageUrl={ownerId.imageUrl}
-                    username={ownerId.username}
-                  />
-                ))}
+                {logCards.map(
+                  ({ action, cardId, _id, ownerId, dateCreated }) => (
+                    <LogCard
+                      action={action}
+                      cardId={cardId}
+                      key={_id}
+                      dateCreated={dateCreated}
+                      imageUrl={ownerId.imageUrl}
+                      username={ownerId.username}
+                    />
+                  )
+                )}
               </Grid>
               <Grid item xs={3}>
                 <Typography
