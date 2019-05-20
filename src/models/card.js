@@ -20,20 +20,14 @@ export const card = {
     currentCard: {}
   },
   reducers: {
-    putListCard(state, { card }) {
-      // console.log(card);
-      // let newState = Object.assign({}, state);
-      // for(let card_ in newState.cards){
-      //   if(card.listId == card_){
-      //     newState.cards[card_].push(card);
-      //   }
-      // }
+    putListCard(state, { card }) { 
       const { listId } = card;
+      const tem=state.cards[card.listId]===undefined?[]:state.cards[card.listId]; 
       return {
         ...state,
         cards: {
           ...state.cards,
-          [listId]: [...state.cards[card.listId], card]
+          [listId]: [...tem, card]
         }
       };
     },

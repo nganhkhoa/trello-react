@@ -120,8 +120,7 @@ class TrelloList extends React.Component {
     const { idList } = this.props;
     const { globalCards } = this.state;
     const cards = globalCards[idList] ? globalCards[idList] : [];
-    cards.sort((x, y) => (x.order > y.order ? 1 : -1));
-    console.log(cards);
+    cards.sort((x, y) => (x.order > y.order ? 1 : -1)); 
     return (
       <Droppable droppableId={String(idList)}>
         {provided => (
@@ -147,7 +146,7 @@ class TrelloList extends React.Component {
             {cards.map((card, index) => (
               <TrelloCard key={card._id} card={card} index={index} />
             ))}
-            <AddButton idList={idList} />
+            <AddButton idList={idList} color="red" />
           </div>
         )}
       </Droppable>
