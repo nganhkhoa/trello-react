@@ -5,7 +5,8 @@ exports.onCreateWebpackConfig = ({ stage, actions }) => {
     resolve: {
       // modules: [path.resolve(__dirname, "src"), "node_modules"],
       alias: {
-        '@': path.resolve(__dirname, 'src')
+        '@': path.resolve(__dirname, 'src'),
+        'react-dom': '@hot-loader/react-dom'
       }
     }
   });
