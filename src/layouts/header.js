@@ -5,27 +5,27 @@ import { navigate } from 'gatsby';
 
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Icon from '@material-ui/core/Icon';
-import Popover from '@material-ui/core/Popover';
-
 import PopupState, {
   bindTrigger,
   bindPopover
 } from 'material-ui-popup-state/index';
+
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import AppBar from '@material-ui/core/AppBar';
+import Badge from '@material-ui/core/Badge';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuIcon from '@material-ui/icons/Menu';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Popover from '@material-ui/core/Popover';
+import TextField from '@material-ui/core/TextField';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
   root: {
@@ -120,6 +120,7 @@ const customStyle = {
 @connect(({ user }) => ({
   currentUser: user.user
 }))
+@withStyles(styles)
 class PrimarySearchAppBar extends React.Component {
   state = {
     anchorEl: null,
@@ -129,10 +130,13 @@ class PrimarySearchAppBar extends React.Component {
     isPublic: true,
     isLogin: this.props.currentUser.username !== undefined
   };
+
   componentWillReceiveProps(props) {
-    if (props.currentUser.username) this.setState({ isLogin: true });
+    const { currentUser } = props;
+    if (currentUser.username) this.setState({ isLogin: true });
     else this.setState({ isLogin: false });
   }
+
   toLogout = () => {
     this.setState({ anchorEl: null });
     this.handleMobileMenuClose();
@@ -159,31 +163,37 @@ class PrimarySearchAppBar extends React.Component {
   handleMobileMenuClose = () => {
     this.setState({ mobileMoreAnchorEl: null });
   };
+
   clickLabel = e => {
-    var btn = document.getElementsByName('label');
+    const btn = document.getElementsByName('label');
     for (var x of btn) x.innerHTML = '';
     e.target.innerHTML = `<i style={{float:'right'}}>✔</i>`;
     this.setState({ background: e.target.style.backgroundColor });
   };
+
   handleChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    var name = e.target.name;
+    const name = e.target.name;
     this.setState({ [name]: value });
   };
+
   createBoard = () => {
-    var { dispatch, currentUser } = this.props;
-    var { boardName, background, isPublic } = this.state;
+    const {
+      dispatch,
+      currentUser: { _id: ownerId }
+    } = this.props;
+    const { boardName, background, isPublic: modeView } = this.state;
     if (!boardName) return false;
-    var body = {
-      name: boardName,
-      background,
-      modeView: isPublic,
-      ownerId: currentUser._id
-    };
+
     dispatch({
       type: 'board/addBoardRequest',
-      payload: body
+      payload: {
+        boardName,
+        background,
+        modeView,
+        ownerId
+      }
     });
     this.setState({
       anchorEl: null,
@@ -193,14 +203,23 @@ class PrimarySearchAppBar extends React.Component {
       isPublic: true
     });
   };
+
   toLogin = () => {
     navigate(`/auth/login`);
   };
+
   toSignUp = () => {
     navigate(`/auth/signUp`);
   };
+
   render() {
-    const { anchorEl, mobileMoreAnchorEl, isLogin } = this.state;
+    const {
+      anchorEl,
+      mobileMoreAnchorEl,
+      isLogin,
+      boardName,
+      isPublic
+    } = this.state;
     const { classes } = this.props;
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -260,7 +279,7 @@ class PrimarySearchAppBar extends React.Component {
                     margin="dense"
                     label="Tên bảng"
                     style={styles.textField}
-                    value={this.state.boardName}
+                    value={boardName}
                     fullWidth
                     onChange={this.handleChange}
                     variant="outlined"
@@ -273,7 +292,7 @@ class PrimarySearchAppBar extends React.Component {
                     style={customStyle.title}
                   >
                     <Checkbox
-                      checked={this.state.isPublic}
+                      checked={isPublic}
                       name="isPublic"
                       onChange={this.handleChange}
                     />
@@ -413,7 +432,7 @@ class PrimarySearchAppBar extends React.Component {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                      if (this.state.boardName !== '') {
+                      if (boardName !== '') {
                         popupState.close();
                         this.createBoard();
                       }
@@ -504,7 +523,7 @@ class PrimarySearchAppBar extends React.Component {
                             margin="dense"
                             label="Tên bảng"
                             style={styles.textField}
-                            value={this.state.boardName}
+                            value={boardName}
                             fullWidth
                             onChange={this.handleChange}
                             variant="outlined"
@@ -517,7 +536,7 @@ class PrimarySearchAppBar extends React.Component {
                             style={customStyle.title}
                           >
                             <Checkbox
-                              checked={this.state.isPublic}
+                              checked={isPublic}
                               name="isPublic"
                               onChange={this.handleChange}
                             />
@@ -657,7 +676,7 @@ class PrimarySearchAppBar extends React.Component {
                             variant="contained"
                             color="primary"
                             onClick={() => {
-                              if (this.state.boardName !== '') {
+                              if (boardName !== '') {
                                 popupState.close();
                                 this.createBoard();
                               }
@@ -734,4 +753,4 @@ PrimarySearchAppBar.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(PrimarySearchAppBar);
+export default PrimarySearchAppBar;

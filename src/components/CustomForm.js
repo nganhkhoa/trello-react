@@ -1,29 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import blue from '@material-ui/core/colors/blue';
-import DateFnsUtils from '@date-io/date-fns';
-import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import AutoCompleteTextField from '@/components/AutoCompleteTextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputBase from '@material-ui/core/InputBase';
+import PropTypes from 'prop-types';
+
+import { withStyles } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
 import {
   MuiPickersUtilsProvider,
   TimePicker,
   DatePicker
 } from 'material-ui-pickers';
+
+import Button from '@material-ui/core/Button';
+import DateFnsUtils from '@date-io/date-fns';
+import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import InputBase from '@material-ui/core/InputBase';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+
+import AutoCompleteTextField from '@/components/AutoCompleteTextField';
+
 // this form user for sub form in card detail
 const BootstrapInput = withStyles(theme => ({
   root: {
@@ -60,6 +64,7 @@ const BootstrapInput = withStyles(theme => ({
     }
   }
 }))(InputBase);
+
 const styles = theme => ({
   root: {
     flexGrow: 1
@@ -123,6 +128,7 @@ const customStyle = {
   },
   margin: { width: 130, marginLeft: 9, marginTop: -15 }
 };
+
 @connect(({ card, user, list, board }) => ({
   currentCard: card.currentCard,
   currentUser: user.user,
@@ -130,59 +136,62 @@ const customStyle = {
   boardInfo: board.boardInfo,
   cards: card.cards
 }))
+@withStyles(styles)
 class DialogForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      labelColor: null,
-      labelText: '',
-      username: null,
-      deadline: null,
-      selectedName: '',
-      order: '',
-      listId: '',
-      totalCard: 0
-    };
-  }
+  state = {
+    labelColor: null,
+    labelText: '',
+    username: null,
+    deadline: null,
+    selectedName: '',
+    order: '',
+    listId: '',
+    totalCard: 0
+  };
+
   handleClose = () => {
     this.props.onClose(null);
   };
 
   handleChange = e => {
-    var { lists, cards } = this.props;
-    var name = e.target.name;
-    var value = e.target.value;
+    const { lists, cards } = this.props;
+    const name = e.target.name;
+    const value = e.target.value;
     if (name === 'listId') {
       //  if select listId, count num of card
       for (var x of lists) {
         if (x._id === value) this.setState({ totalCard: cards[value].length });
       }
     }
-    console.log(value);
     this.setState({ [name]: value });
   };
 
   handleDateChange = date => {
     this.setState({ deadline: date });
   };
+
   onSave = kind => {
-    var { currentCard, dispatch, currentUser } = this.props;
-    var { deadline, labelText, labelColor } = this.state;
-    var body = { _id: currentCard._id, idUserEdit: currentUser._id };
-    if (kind === 'deadline') {
-      if (deadline === null) return false;
-      body.deadline = deadline;
-    } else {
-      // label
-      if (labelColor === null) return false;
-      body.label = { labelColor, labelText };
-    }
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserEdit }
+    } = this.props;
+    const { deadline, labelText, labelColor } = this.state;
     dispatch({
       type: 'card/editCardRequest',
-      payload: { body }
+      payload: {
+        cardId,
+        idUserEdit,
+        deadline,
+        label: {
+          labelColor,
+          labelText
+        }
+      }
     });
     this.props.onClose(null);
   };
+
   checkKind(nextProps, obj) {
     if (nextProps.kind === 'ADD_MEMBER_FORM') {
       obj.isMemberForm = true;
@@ -196,49 +205,62 @@ class DialogForm extends React.Component {
       obj.isDeleteForm = true;
     }
   }
+
   move = () => {
-    var { currentCard, dispatch, currentUser } = this.props;
-    var { order, listId } = this.state;
-    if (order === null || listId === null) return false;
+    const { order, listId: newListId } = this.state;
+    if (order === null || newListId === null) return false;
+
+    const {
+      dispatch,
+      currentCard: { _id: cardId, listId: oldListId },
+      currentUser: { _id: idUserMove }
+    } = this.props;
     dispatch({
       type: 'card/moveCardRequest',
       payload: {
-        _id: currentCard._id,
-        newListId: listId,
-        oldListId: currentCard.listId,
-        idUserMove: currentUser._id,
+        cardId,
+        newListId,
+        oldListId,
+        idUserMove,
         order
       }
     });
 
     this.props.onClose(null);
   };
+
   delete = () => {
-    var { currentCard, dispatch, currentUser, boardInfo } = this.props;
-    var body = { idUserRemove: currentUser._id };
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserRemove },
+      boardInfo: { _id: boardId }
+    } = this.props;
     dispatch({
       type: 'card/deleteCardRequest',
-      payload: { _id: currentCard._id, body }
+      payload: { cardId, idUserRemove }
     });
     this.props.onClose(null); // close sub form
     dispatch({
       type: 'card/toggleModal', // toggle modal detail card
       payload: { card: null }
     });
-    // update   list
+    // update list
     dispatch({
       type: 'list/fetchListOfBoard',
       payload: {
-        boardId: boardInfo._id
+        boardId
       }
     });
   };
+
   clickLabel = e => {
     var btn = document.getElementsByName('label');
     for (var x of btn) x.innerHTML = '';
     e.target.innerHTML = `<i style={{float:'right'}}>✔</i>`;
     this.setState({ labelColor: e.target.style.backgroundColor });
   };
+
   render() {
     const {
       classes,
@@ -256,6 +278,7 @@ class DialogForm extends React.Component {
     var obj = {};
     this.checkKind(this.props, obj); // because component will receive props not work ??????????
     var title, form;
+
     if (obj.isMemberForm) {
       title = 'Thêm thành viên';
       form = <AutoCompleteTextField kind="card" />;
@@ -558,12 +581,12 @@ class DialogForm extends React.Component {
     );
   }
 }
+
 DialogForm.propTypes = {
   classes: PropTypes.object.isRequired,
   onClose: PropTypes.func,
   selectedName: PropTypes.string
 };
-const DialogFormWrapped = withStyles(styles)(DialogForm);
 
 @connect(({ card }) => ({ subForm: card.subForm }))
 class CustomForm extends React.Component {
@@ -572,36 +595,40 @@ class CustomForm extends React.Component {
     selectedName: '',
     kind: null
   };
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       kind: nextProps.subForm.kind,
       open: nextProps.subForm.open
     });
   }
+
   handleClickOpen = () => {
     this.setState({ open: true });
   };
+
   handleClose = value => {
     this.setState({ selectedName: value, open: false, kind: null });
-    var { dispatch } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'card/toggleSubForm',
       payload: { kind: null, open: false }
     });
   };
+
   render() {
-    if (this.state.open)
-      return (
-        <div>
-          <DialogFormWrapped
-            selectedName={this.state.selectedName}
-            open={this.state.open}
-            onClose={this.handleClose}
-            kind={this.state.kind}
-          />
-        </div>
-      );
-    return null;
+    const { open, selectedName, kind } = this.state;
+    if (!open) return null;
+    return (
+      <div>
+        <DialogForm
+          onClose={this.handleClose}
+          selectedName={selectedName}
+          open={open}
+          kind={kind}
+        />
+      </div>
+    );
   }
 }
 export default CustomForm;

@@ -36,9 +36,14 @@ export const board = {
         }
       });
     },
-    *addBoardRequest(payload) {
+    *addBoardRequest({ boardName, background, modeView, ownerId }) {
       const { board } = yield call(addBoardRequest, {
-        data: payload
+        data: {
+          name: boardName,
+          background,
+          modeView,
+          ownerId
+        }
       });
 
       yield put({
@@ -55,10 +60,10 @@ export const board = {
         payload: { boardInfo: board }
       });
     },
-    *addMemberRequest({ body }) {
+    *addMemberRequest(payload) {
       console.log(`add member board request`);
       const { board } = yield call(addMemberRequest, {
-        data: { body }
+        data: payload
       });
       yield put({
         type: 'board/set',
@@ -67,10 +72,10 @@ export const board = {
         }
       });
     },
-    *removeMemberRequest({ body }) {
+    *removeMemberRequest(payload) {
       console.log(`remove member card request`);
       const { board } = yield call(removeMemberRequest, {
-        data: { body }
+        data: payload
       });
       yield put({
         type: 'board/set',
@@ -79,18 +84,18 @@ export const board = {
         }
       });
     },
-    *deleteBoardRequest({ _id, body }) {
-      console.log(`delete board  #${_id}`);
+    *deleteBoardRequest({ boardId, ownerId }) {
+      console.log(`delete board #${boardId}`);
       yield call(deleteBoardRequest, {
-        params: {
-          _id: _id
-        },
-        data: { body }
+        query: boardId,
+        data: {
+          ownerId
+        }
       });
       yield put({
         type: 'user/removeBoard',
         payload: {
-          _id
+          boardId
         }
       });
     }

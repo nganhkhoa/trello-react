@@ -1,45 +1,59 @@
 import React, { Fragment } from 'react';
+import dateFormat from 'dateformat';
 import { connect } from 'react-redux';
-import Card from '@material-ui/core/Card';
-import Typography from '@material-ui/core/Typography';
-import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
+
 import deepOrange from '@material-ui/core/colors/deepOrange';
 import deepPurple from '@material-ui/core/colors/deepPurple';
-import Textarea from 'react-textarea-autosize';
+
+import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import dateFormat from 'dateformat';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Textarea from 'react-textarea-autosize';
+import Typography from '@material-ui/core/Typography';
 
 @connect(({ user, card }) => ({
   currentUser: user.user,
   currentCard: card.currentCard
 }))
 class Comment extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { content: '', isEdit: false };
-  }
+  state = {
+    content: '',
+    isEdit: false
+  };
+
   edit = e => {
+    const { content } = this.props;
     this.setState({
       isEdit: true,
-      content: this.props.content
+      content
     });
   };
+
   onSave = e => {
-    var { _id, currentUser, dispatch } = this.props;
-    var { content } = this.state;
-    var body = { _id, content, idUserEdit: currentUser._id };
+    const {
+      dispatch,
+      _id: commentId,
+      currentUser: { _id: idUserEdit }
+    } = this.props;
+    const { content } = this.state;
     this.setState({ isEdit: false });
     dispatch({
       type: 'comment/editCommentRequest',
-      payload: { body }
+      payload: {
+        commentId,
+        idUserEdit,
+        content
+      }
     });
   };
+
   handleInputChange = e => {
     this.setState({
       content: e.target.value
     });
   };
+
   render() {
     const styles = {
       avatar: {
@@ -116,7 +130,7 @@ class Comment extends React.Component {
 
     const { content, imageUrl, username, dateCreated } = this.props;
     const { isEdit } = this.state;
-    var body = isEdit ? (
+    const body = isEdit ? (
       <div>
         <Textarea
           autoFocus

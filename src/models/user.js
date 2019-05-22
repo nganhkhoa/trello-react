@@ -1,5 +1,5 @@
 import { navigate } from 'gatsby';
-import { delay, call, put } from 'redux-saga/effects';
+import { call, put } from 'redux-saga/effects';
 
 import {
   login,
@@ -8,7 +8,7 @@ import {
   fetchUserBoard,
   fetchAllUsername
 } from '@/services/user';
-import { setUser } from '@/utils/auth';
+
 import {
   LOGIN_OK,
   REGISTER_OK,
@@ -16,6 +16,8 @@ import {
   USER_INCORRECT,
   QUERY_OK
 } from '@/utils/return_messages';
+
+import { setUser } from '@/utils/auth';
 
 export const user = {
   state: {
@@ -49,7 +51,6 @@ export const user = {
       return { ...state, allUsername: usernames };
     },
     setError(state, { error }) {
-      console.log('vo');
       return { ...state, error };
     },
     clear(state) {
@@ -131,14 +132,11 @@ export const user = {
     },
     *logout({ name }) {
       console.log(`Logout`);
-      yield delay(1000);
+      // yield delay(1000);
       yield put({
         type: 'user/clear',
         payload: {}
       });
-    },
-    *register(payload) {
-      yield delay(2000);
     },
     *fetchAllUsername() {
       // call api query all username in db

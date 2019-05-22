@@ -20,12 +20,11 @@ export const comment = {
 
     putAfterEdit(state, { comment }) {
       // edit req and then call this
-      var tem = [];
-      for (var x of state.comments) {
-        if (x._id === comment._id) tem.push(comment);
-        else tem.push(x);
-      }
-      return { ...state, comments: tem };
+      const { comments } = state;
+      return {
+        ...state,
+        comments: comments.map(x => (x._id === comment._id ? comment : x))
+      };
     }
   },
   effects: {
@@ -42,11 +41,13 @@ export const comment = {
         }
       });
     },
-    *editCommentRequest({ body }) {
-      console.log(`edit comment req `);
+    *editCommentRequest({ commentId, idUserEdit, content }) {
+      console.log(`edit comment req`);
       var { comment } = yield call(editCommentRequest, {
         data: {
-          body
+          _id: commentId,
+          idUserEdit,
+          content
         }
       });
       yield put({
@@ -56,11 +57,14 @@ export const comment = {
         }
       });
     },
-    *addCommentRequest({ body }) {
-      console.log(`add comment req `);
+    *addCommentRequest({ content, cardId, ownerId, fileUrl }) {
+      console.log(`add comment req`);
       yield call(addCommentRequest, {
         data: {
-          body
+          content,
+          cardId,
+          ownerId,
+          fileUrl
         }
       });
     }

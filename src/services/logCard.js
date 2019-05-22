@@ -4,7 +4,7 @@ const { GET } = METHOD;
 const { CARD } = API_PATH;
 
 export const fetchLogOfCard = async ({ query }) => {
-  return request(`${CARD}/${query}`, {
+  return request(`${CARD}/${query}/logCards`, {
     method: GET
   });
 };

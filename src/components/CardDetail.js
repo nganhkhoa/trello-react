@@ -1,46 +1,47 @@
 import React, { Fragment } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import Textarea from 'react-textarea-autosize';
-import Grid from '@material-ui/core/Grid';
-import Comment from '@/components/Comment';
-import LogCard from '@/components/LogCard';
-import Tooltip from '@material-ui/core/Tooltip';
-import Popover from '@material-ui/core/Popover';
 import dateFormat from 'dateformat';
+import classNames from 'classnames';
+
+import { withStyles } from '@material-ui/core/styles';
+import deepOrange from '@material-ui/core/colors/deepOrange';
+import deepPurple from '@material-ui/core/colors/deepPurple';
 import PopupState, {
   bindTrigger,
   bindPopover
 } from 'material-ui-popup-state/index';
-import CustomForm from '@/components/CustomForm';
-import classNames from 'classnames';
+
 import Avatar from '@material-ui/core/Avatar';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import deepPurple from '@material-ui/core/colors/deepPurple';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Checkbox from '@material-ui/core/Checkbox';
+import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@material-ui/core/Dialog';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
-// import * as moment from 'moment';
+import Comment from '@/components/Comment';
+import CustomForm from '@/components/CustomForm';
+import LogCard from '@/components/LogCard';
 
-const DialogTitle = withStyles(theme => ({
+const DialogTitle = withStyles(({ palette, spacing }) => ({
   root: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    borderBottom: `1px solid ${palette.divider}`,
     margin: 0,
-    padding: theme.spacing.unit * 2
+    padding: spacing.unit * 2
   },
   closeButton: {
     position: 'absolute',
-    right: theme.spacing.unit,
-    top: theme.spacing.unit,
-    color: theme.palette.grey[500]
+    right: spacing.unit,
+    top: spacing.unit,
+    color: palette.grey[500]
   }
 }))(props => {
   const { children, classes, onClose } = props;
@@ -135,6 +136,7 @@ const styles = theme => ({
     fontWeight: 'bold'
   }
 });
+
 const customStyle = {
   orangeAvatar: {
     margin: 10,
@@ -195,6 +197,7 @@ const customStyle = {
   currentUser: user.user,
   boardInfo: board.boardInfo
 }))
+@withStyles(styles)
 class CardDetail extends React.Component {
   state = {
     open: false,
@@ -208,102 +211,99 @@ class CardDetail extends React.Component {
     isEditDescription: false,
     memberName: '' // member name is clicked avatar
   };
+
   componentWillReceiveProps(nextProps) {
-    // console.log(nextProps);
-    if (nextProps.currentCard) {
-      var {
-        description,
-        title,
-        deadline,
-        labels,
-        fileUrl,
-        _id,
-        dateCreated,
-        ownerId,
-        archived,
-        members,
-        comments,
-        logCards
-      } = nextProps.currentCard;
-      this.setState({
-        open: nextProps.showDetail,
-        description,
-        title,
-        deadline,
-        labels,
-        fileUrl,
-        dateCreated,
-        _id,
-        ownerId,
-        archived,
-        members,
-        comments,
-        logCards
-      });
-    } else this.setState({ open: nextProps.showDetail });
+    if (!nextProps.currentCard) {
+      this.setState({ open: nextProps.showDetail });
+      return;
+    }
+    this.setState({
+      open: nextProps.showDetail,
+      ...nextProps.currentCard
+    });
   }
+
   deleteLabel = labelColor => {
-    var { currentCard, currentUser, dispatch } = this.props;
-    var body = {
-      _id: currentCard._id,
-      labelColor,
-      idUserRemove: currentUser._id
-    };
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserRemove }
+    } = this.props;
     dispatch({
       type: 'card/deleteLabelCardRequest',
-      payload: { body }
+      payload: {
+        cardId,
+        labelColor,
+        idUserRemove
+      }
     });
   };
+
   deleteMember = memberName => {
-    var { currentCard, currentUser, dispatch } = this.props;
-    var body = {
-      _id: currentCard._id,
-      memberName,
-      idUserRemove: currentUser._id
-    };
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserRemove }
+    } = this.props;
     dispatch({
       type: 'card/removeMemberRequest',
-      payload: { body }
+      payload: {
+        cardId,
+        memberName,
+        idUserRemove
+      }
     });
   };
-  onSave = name => {
-    var { currentCard, currentUser, dispatch } = this.props;
-    var body =
-      name === 'title'
-        ? { title: this.state.title }
-        : { description: this.state.description };
 
-    body._id = currentCard._id;
-    body.idUserEdit = currentUser._id;
+  onSave = name => {
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserEdit }
+    } = this.props;
+    const { title, description } = this.state;
+
     dispatch({
       type: 'card/editCardRequest',
-      payload: { body }
+      payload: {
+        cardId,
+        title,
+        description,
+        idUserEdit
+      }
     });
+
     if (name === 'title') this.setState({ isEditTitle: false });
     else this.setState({ isEditDescription: false });
 
     dispatch({
       type: 'card/fetchCommentOfCard',
-      payload: { cardId: currentCard._id }
+      payload: { cardId }
     });
   };
+
   onClickAddComment = () => {
-    var { currentCard, currentUser, dispatch } = this.props;
-    var comment = {
-      content: this.state.commentText,
-      cardId: currentCard._id,
-      ownerId: currentUser._id,
-      fileUrl: ''
-    };
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: ownerId }
+    } = this.props;
+    const { commentText: content } = this.state;
     (async () => {
       await dispatch({
         type: 'comment/addCommentRequest',
-        payload: { body: comment }
+        payload: {
+          content,
+          cardId,
+          ownerId,
+          fileUrl: ''
+        }
       });
+      // TODO: change state after add
       dispatch({
         // why it delay ?
         type: 'comment/fetchCommentOfCard',
-        payload: { cardId: currentCard._id }
+        payload: { cardId }
       });
     })();
 
@@ -318,10 +318,12 @@ class CardDetail extends React.Component {
       payload: {}
     });
   };
+
   formEdit = (name, value) => {
     const { classes } = this.props;
-    var state =
+    const newState =
       name === 'title' ? { isEditTitle: false } : { isEditDescription: false };
+
     return (
       <div>
         <Textarea
@@ -344,7 +346,7 @@ class CardDetail extends React.Component {
           Lưu{' '}
         </Button>
         <Button
-          onClick={() => this.setState(state)}
+          onClick={() => this.setState(newState)}
           variant="contained"
           color="primary"
           disableRipple
@@ -357,25 +359,27 @@ class CardDetail extends React.Component {
       </div>
     );
   };
+
   handleInputChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    this.setState({ [e.target.name]: value });
 
-    if (e.target.type === 'checkbox') {
-      // edit arrchived
-      var { currentCard, currentUser, dispatch } = this.props;
-      var body = {
-        _id: currentCard._id,
-        idUserEdit: currentUser._id,
-        archived: value
-      };
-      dispatch({
-        type: 'card/editCardRequest',
-        payload: { body }
-      });
+    this.setState({ [e.target.name]: value });
+    if (e.target.type !== 'checkbox') {
+      return;
     }
+    // archive card
+    const {
+      dispatch,
+      currentCard: { _id: cardId },
+      currentUser: { _id: idUserEdit }
+    } = this.props;
+    dispatch({
+      type: 'card/editCardRequest',
+      payload: { cardId, idUserEdit, archived: value }
+    });
   };
+
   showForm = kind => {
     var { dispatch } = this.props;
     dispatch({
@@ -383,34 +387,29 @@ class CardDetail extends React.Component {
       payload: { kind, open: true }
     });
   };
+
   render() {
     const { classes, comments: raw_comments = [], logCards = [] } = this.props;
     const comments = raw_comments.reverse();
-    // comments.sort((x, y) =>
-    // moment(x.dateCreated) > moment(y.dateCreated) ? 1 : -1
-    // );
-    var {
+    const {
       commentText,
       description,
       title,
       deadline,
       labels = [],
-      // fileUrl = [],
-      // dateCreated,
-      // _id,
-      // ownerId,
       archived,
       members = [],
       isEditDescription,
       isEditTitle
     } = this.state;
-    var formEditTitle = isEditTitle ? this.formEdit('title', title) : null;
-    var formEditDescription = isEditDescription
+    const formEditTitle = isEditTitle ? this.formEdit('title', title) : null;
+    const formEditDescription = isEditDescription
       ? this.formEdit('description', description)
       : null;
-    var Deadline = deadline
+    const Deadline = deadline
       ? dateFormat(new Date(deadline), 'dddd, mmmm dS, yyyy, h:MM:ss TT')
       : 'Chưa có deadline';
+
     return (
       <div>
         <Dialog
@@ -465,22 +464,25 @@ class CardDetail extends React.Component {
                   </Typography>
                   {members.map(
                     ({
-                      _id,
-                      username,
-                      imageUrl = 'http://tinyurl.com/y34hpqbr'
+                      _id: memberId,
+                      username: memberUsername,
+                      imageUrl: memberImageUrl = 'http://tinyurl.com/y34hpqbr'
                     }) => {
                       return (
-                        <PopupState variant="popover" key={username}>
+                        <PopupState variant="popover" key={memberUsername}>
                           {popupState => (
                             <div>
-                              <Tooltip title={username} placement="bottom">
+                              <Tooltip
+                                title={memberUsername}
+                                placement="bottom"
+                              >
                                 <Avatar
                                   {...bindTrigger(popupState)}
-                                  key={username}
-                                  src={imageUrl}
+                                  key={memberUsername}
+                                  src={memberImageUrl}
                                   style={customStyle.purpleAvatar}
                                 >
-                                  {username.substring(0, 2)}
+                                  {memberUsername.substring(0, 2)}
                                 </Avatar>
                               </Tooltip>
                               <Popover
@@ -502,20 +504,20 @@ class CardDetail extends React.Component {
                                 >
                                   <CardContent>
                                     <Avatar
-                                      src={imageUrl}
+                                      src={memberImageUrl}
                                       style={customStyle.purpleAvatar}
                                     >
-                                      {username.substring(0, 2)}
+                                      {memberUsername.substring(0, 2)}
                                     </Avatar>
                                     <Typography style={customStyle.title}>
                                       {' '}
-                                      {username}
+                                      {memberUsername}
                                     </Typography>
                                     <Button
                                       onClick={() =>
-                                        this.deleteMember(username)
+                                        this.deleteMember(memberUsername)
                                       }
-                                      id={username}
+                                      id={memberUsername}
                                       variant="contained"
                                       color="primary"
                                       disableRipple
@@ -830,4 +832,4 @@ class CardDetail extends React.Component {
   }
 }
 
-export default withStyles(styles)(CardDetail);
+export default CardDetail;

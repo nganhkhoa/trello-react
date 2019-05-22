@@ -4,15 +4,16 @@ import { navigate } from 'gatsby';
 import PropTypes from 'prop-types';
 
 import withStyles from '@material-ui/core/styles/withStyles';
-import Button from '@material-ui/core/Button';
+
 import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
@@ -50,6 +51,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3
   }
 });
+
 const customStyles = {
   root: {
     margin: 7
@@ -59,12 +61,14 @@ const customStyles = {
 @connect(({ user }) => ({
   error: user.error
 }))
+@withStyles(styles)
 class Login extends React.Component {
   state = {
     username: '',
     password: '',
     alertAccount: ''
   };
+
   componentWillReceiveProps(props) {
     console.log(props);
     var { error } = props;
@@ -73,6 +77,7 @@ class Login extends React.Component {
         this.setState({ alertAccount: error.alertAccount });
     }
   }
+
   onSubmit = () => {
     const { dispatch } = this.props;
     this.setState({ alertAccount: '' });
@@ -93,9 +98,8 @@ class Login extends React.Component {
   };
 
   render() {
-    var { classes } = this.props;
-    var { alertAccount } = this.state;
-    // console.log(alertAccount);
+    const { classes } = this.props;
+    const { alertAccount, username, password } = this.state;
     return (
       <React.Fragment>
         <Header />
@@ -117,7 +121,7 @@ class Login extends React.Component {
                   name="username"
                   autoComplete="username"
                   onChange={this.handleChange('username')}
-                  value={this.state.username}
+                  value={username}
                 />
               </FormControl>
 
@@ -129,7 +133,7 @@ class Login extends React.Component {
                   id="password"
                   autoComplete="current-password"
                   onChange={this.handleChange('password')}
-                  value={this.state.password}
+                  value={password}
                 />
                 <Typography
                   style={{ ...customStyles.root, color: 'red' }}
@@ -180,4 +184,4 @@ Login.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(Login);
+export default Login;

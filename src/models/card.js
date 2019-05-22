@@ -16,19 +16,20 @@ export const card = {
   state: {
     cards: {},
     showDetail: false,
-    subForm: { open: false, kind: null }, //  sub form of card detail , kind is addmem form, label form, deadline form ,....
+    //  sub form of card detail , kind is addmem form, label form, deadline form ,....
+    subForm: { open: false, kind: null },
     currentCard: {}
   },
   reducers: {
     putListCard(state, { card }) {
       const { listId } = card;
-      const tem =
+      const temp =
         state.cards[card.listId] === undefined ? [] : state.cards[card.listId];
       return {
         ...state,
         cards: {
           ...state.cards,
-          [listId]: [...tem, card]
+          [listId]: [...temp, card]
         }
       };
     },
@@ -71,7 +72,6 @@ export const card = {
       };
     },
     fromList(state, { cardItems }) {
-      // console.log(cardItems);
       return {
         ...state,
         cards: cardItems
@@ -144,12 +144,27 @@ export const card = {
         }
       });
     },
-    *editCardRequest({ body }) {
+    *editCardRequest({
+      cardId,
+      title,
+      description,
+      idUserEdit,
+      archived,
+      deadline,
+      label
+    }) {
       console.log(`editting card request`);
       const { card } = yield call(editCardRequest, {
-        data: { body }
+        data: {
+          _id: cardId,
+          title,
+          description,
+          idUserEdit,
+          archived,
+          deadline,
+          label
+        }
       });
-      console.log(card);
       yield put({
         type: 'card/putCurrentCard',
         payload: {
@@ -157,10 +172,14 @@ export const card = {
         }
       });
     },
-    *addMemberRequest({ body }) {
+    *addMemberRequest({ _id: cardId, idUserAdd, newMemberName }) {
       console.log(`add member card request`);
       const { card } = yield call(addMemberRequest, {
-        data: { body }
+        data: {
+          _id: cardId,
+          idUserAdd,
+          newMemberName
+        }
       });
       yield put({
         type: 'card/putCurrentCard',
@@ -169,10 +188,14 @@ export const card = {
         }
       });
     },
-    *removeMemberRequest({ body }) {
+    *removeMemberRequest({ cardId, memberName, idUserRemove }) {
       console.log(`remove member card request`);
       const { card } = yield call(removeMemberRequest, {
-        data: { body }
+        data: {
+          cardId,
+          memberName,
+          idUserRemove
+        }
       });
       yield put({
         type: 'card/putCurrentCard',
@@ -181,15 +204,14 @@ export const card = {
         }
       });
     },
-    *moveCardRequest({ _id, newListId, oldListId, idUserMove, order }) {
+    *moveCardRequest({ cardId, newListId, oldListId, idUserMove, order }) {
       console.log(
-        `move card request ${_id}, ${oldListId} -> ${newListId}, ${order}`
+        `move card request ${cardId}, ${oldListId} -> ${newListId}, ${order}`
       );
-      // console.log(card);
       yield put({
         type: 'card/resolveMoveCard',
         payload: {
-          cardId: _id,
+          cardId,
           sourceList: oldListId,
           destList: newListId,
           newOrder: order
@@ -198,7 +220,7 @@ export const card = {
       // console.log(body)
       yield call(moveCardRequest, {
         data: {
-          _id,
+          _id: cardId,
           newListId,
           idUserMove,
           order
@@ -206,20 +228,24 @@ export const card = {
       });
     },
 
-    *deleteCardRequest({ _id, body }) {
-      console.log(`delete card  #${_id}`);
+    *deleteCardRequest({ cardId, idUserRemove }) {
+      console.log(`delete card  #${cardId}`);
       yield call(deleteCardRequest, {
         params: {
-          _id: _id
+          _id: cardId
         },
-        data: { body }
+        data: { idUserRemove }
       });
     },
 
-    *deleteLabelCardRequest({ body }) {
-      console.log(`delete label card   `);
+    *deleteLabelCardRequest({ cardId, labelColor, idUserRemove }) {
+      console.log(`delete label card`);
       const { card } = yield call(deleteLabelCardRequest, {
-        data: { body }
+        data: {
+          cardId,
+          labelColor,
+          idUserRemove
+        }
       });
       yield put({
         type: 'card/putCurrentCard',
@@ -238,7 +264,6 @@ export const card = {
           listId
         }
       });
-      console.log(card);
       yield put({
         type: 'card/putListCard',
         payload: {
@@ -246,10 +271,10 @@ export const card = {
         }
       });
     },
-    *getCardRequest({ _id }) {
+    *getCardRequest({ cardId }) {
       // get card info
-      console.log(`get card request  `);
-      const { card } = yield call(getCardRequest, { query: _id });
+      console.log(`get card request`);
+      const { card } = yield call(getCardRequest, { query: cardId });
       yield put({
         type: 'card/toggleModal',
         payload: {

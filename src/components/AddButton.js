@@ -6,9 +6,6 @@ import Icon from '@material-ui/core/Icon';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
 
-// import addList from '../../action/listAction'
-// import addCard from '../../action/cardAction'
-
 @connect(({ user, board }) => ({
   currentUser: user.user,
   boardInfo: board.boardInfo
@@ -50,7 +47,6 @@ class AddButton extends Component {
           boardId: boardInfo._id
         }
       });
-      // dispatch(addList(text));
       this.setState({
         text: ''
       });
@@ -59,7 +55,6 @@ class AddButton extends Component {
 
   handleAddCard = () => {
     const { text } = this.state;
-    // const { dispatch, idList } = this.props;
     if (text) {
       console.log('add card button pressed');
       const { dispatch, idList, currentUser } = this.props;
@@ -71,7 +66,6 @@ class AddButton extends Component {
           listId: idList
         }
       });
-      // dispatch(addCard(text, idList));
       this.setState({
         text: ''
       });

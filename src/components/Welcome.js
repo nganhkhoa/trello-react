@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { navigate } from 'gatsby';
+
+import { withStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   appBar: {
@@ -52,15 +54,19 @@ const styles = theme => ({
     padding: theme.spacing.unit * 6
   }
 });
+
+@withStyles(styles)
 class Welcome extends Component {
-  toLogin = () => {
+  toLogin() {
     navigate(`/auth/login`);
-  };
-  toSignUp = () => {
+  }
+
+  toSignUp() {
     navigate(`/auth/signUp`);
-  };
+  }
+
   render() {
-    var { classes } = this.props;
+    const { classes } = this.props;
     return (
       <Grid
         container
@@ -123,4 +129,4 @@ class Welcome extends Component {
     );
   }
 }
-export default withStyles(styles)(Welcome);
+export default Welcome;

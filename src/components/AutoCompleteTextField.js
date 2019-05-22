@@ -1,18 +1,21 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import deburr from 'lodash/deburr';
+import Downshift from 'downshift';
+
 import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import blue from '@material-ui/core/colors/blue';
+
+import AddIcon from '@material-ui/icons/Add';
 import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
-import PersonIcon from '@material-ui/icons/Person';
-import blue from '@material-ui/core/colors/blue';
-import { connect } from 'react-redux';
-import deburr from 'lodash/deburr';
-import Downshift from 'downshift';
-import AddIcon from '@material-ui/icons/Add';
 import Paper from '@material-ui/core/Paper';
+import PersonIcon from '@material-ui/icons/Person';
+import TextField from '@material-ui/core/TextField';
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -50,7 +53,9 @@ const styles = theme => ({
     flexGrow: 1
   }
 });
+
 var suggestions = []; // global
+
 function renderInput(inputProps) {
   const { InputProps, classes, ref, ...other } = inputProps;
   return (
@@ -122,17 +127,20 @@ function getSuggestions(value) {
         return keep;
       });
 }
+
 @connect(({ user, card, board }) => ({
   currentUser: user.user,
   currentCard: card.currentCard,
   allUsername: user.allUsername,
   boardInfo: board.boardInfo
 }))
+@withStyles(styles)
 class AutoCompleteTextField extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { username: '', allUsername: [] };
-  }
+  state = {
+    username: '',
+    allUsername: []
+  };
+
   componentWillMount() {
     var { dispatch } = this.props;
     dispatch({
@@ -140,22 +148,32 @@ class AutoCompleteTextField extends React.Component {
       payload: {}
     });
   }
+
   componentWillReceiveProps(props) {
     this.setState({ allUsername: props.allUsername });
     suggestions = props.allUsername;
   }
+
   onSave = () => {
-    if (!this.state.username) return false;
-    var { dispatch, currentUser, currentCard, kind, boardInfo } = this.props; // kind is add mem to board or card
+    const { username: newMemberUsername } = this.state;
+    if (!newMemberUsername) return false;
+
+    const {
+      dispatch,
+      currentUser,
+      currentCard,
+      kind, // kind is add mem to board or card
+      boardInfo
+    } = this.props;
+
     if (kind === 'card') {
-      var body = {
-        _id: currentCard._id,
-        idUserAdd: currentUser._id,
-        newMemberName: this.state.username
-      };
       dispatch({
         type: 'card/addMemberRequest',
-        payload: { body }
+        payload: {
+          _id: currentCard._id,
+          idUserAdd: currentUser._id,
+          newMemberName: newMemberUsername
+        }
       });
       dispatch({
         type: 'card/toggleSubForm',
@@ -169,17 +187,16 @@ class AutoCompleteTextField extends React.Component {
       dispatch({
         type: 'board/addMemberRequest',
         payload: {
-          body: {
-            _id: boardInfo._id,
-            newMemberName: this.state.username
-          }
+          _id: boardInfo._id,
+          newMemberName: newMemberUsername
         }
       });
     }
   };
+
   render() {
     const { classes } = this.props;
-    var { allUsername } = this.state;
+    const { allUsername } = this.state;
     suggestions = allUsername;
     return (
       <div className={classes.root}>
@@ -239,4 +256,4 @@ class AutoCompleteTextField extends React.Component {
     );
   }
 }
-export default withStyles(styles)(AutoCompleteTextField);
+export default AutoCompleteTextField;
