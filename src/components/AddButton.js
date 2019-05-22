@@ -91,7 +91,7 @@ class AddButton extends Component {
     };
 
     const renderAddButton = () => {
-      const { list } = this.props;
+      const { color, list } = this.props;
       const buttonText = list ? 'Thêm danh sách khác' : 'Thêm thẻ khác';
       const textOpacity = list ? 1 : 0.5;
       const textColor = list ? 'while' : 'inherit';
@@ -107,8 +107,8 @@ class AddButton extends Component {
             backgroundColor: buttonBackground
           }}
         >
-          <Icon style={{ color: this.props.color }}>add</Icon>
-          <p style={{ minWidth: 150, color: this.props.color }}>{buttonText}</p>
+          <Icon style={{ color: color }}>add</Icon>
+          <p style={{ minWidth: 272, color: color }}>{buttonText}</p>
         </div>
       );
     };
@@ -119,6 +119,7 @@ class AddButton extends Component {
         ? 'Nhập tiêu đề danh sách'
         : 'Nhập tiêu đề cho thẻ';
       const buttonTitle = list ? 'Thêm danh sách' : 'Thêm thẻ';
+      const { text } = this.state;
 
       return (
         <div>
@@ -133,7 +134,7 @@ class AddButton extends Component {
               placeholder={placeHolder}
               autoFocus
               onBlur={this.closeForm}
-              value={this.state.text}
+              value={text}
               onChange={this.handleInputChange}
               style={{
                 resize: 'none',

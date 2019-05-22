@@ -155,7 +155,7 @@ const customStyle = {
   },
   textarea: {
     resize: 'none',
-    width: '100%',
+    // width: '100%',
     height: '200px',
     outline: 'none',
     border: 'none',
@@ -163,8 +163,8 @@ const customStyle = {
     borderRadius: '5px',
     padding: '5px'
   },
+  fontWeight: 'bold',
   title: {
-    fontWeight: 'bold',
     fortSize: 30
     // color: 'brown'
   },
@@ -289,25 +289,17 @@ class CardDetail extends React.Component {
       currentUser: { _id: ownerId }
     } = this.props;
     const { commentText: content } = this.state;
-    (async () => {
-      await dispatch({
-        type: 'comment/addCommentRequest',
-        payload: {
-          content,
-          cardId,
-          ownerId,
-          fileUrl: ''
-        }
-      });
-      // TODO: change state after add
-      dispatch({
-        // why it delay ?
-        type: 'comment/fetchCommentOfCard',
-        payload: { cardId }
-      });
-    })();
-
     this.setState({ commentText: '' });
+
+    dispatch({
+      type: 'comment/addCommentRequest',
+      payload: {
+        content,
+        cardId,
+        ownerId,
+        fileUrl: ''
+      }
+    });
   };
 
   handleClose = () => {
@@ -331,7 +323,11 @@ class CardDetail extends React.Component {
           value={value}
           minRows={2}
           onChange={this.handleInputChange}
-          style={{ ...customStyle.textarea, width: 250 }}
+          style={{
+            ...customStyle.textarea,
+            // TODO: make this does not span when press edit
+            width: 200
+          }}
           name={name}
         />
         <Button
@@ -392,6 +388,7 @@ class CardDetail extends React.Component {
     const { classes, comments: raw_comments = [], logCards = [] } = this.props;
     const comments = raw_comments.reverse();
     const {
+      open,
       commentText,
       description,
       title,
@@ -416,7 +413,7 @@ class CardDetail extends React.Component {
           maxWidth="md"
           onClose={this.handleClose}
           aria-labelledby="customized-dialog-title"
-          open={this.state.open}
+          open={open}
           style={styles.root}
         >
           <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>

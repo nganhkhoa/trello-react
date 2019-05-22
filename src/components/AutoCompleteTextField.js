@@ -142,7 +142,7 @@ class AutoCompleteTextField extends React.Component {
   };
 
   componentWillMount() {
-    var { dispatch } = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'user/fetchAllUsername',
       payload: {}

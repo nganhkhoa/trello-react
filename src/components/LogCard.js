@@ -8,7 +8,7 @@ import deepPurple from '@material-ui/core/colors/deepPurple';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 
-@connect(null)
+@connect(state => ({}))
 class LogCard extends React.Component {
   render() {
     const styles = {

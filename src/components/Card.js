@@ -7,10 +7,10 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-@connect()
+@connect(state => ({}))
 class TrelloCard extends React.Component {
-  onClick(e) {
-    var { dispatch, card: cardId } = this.props;
+  onClick = e => {
+    const { dispatch, card: cardId } = this.props;
     dispatch({
       type: 'card/getCardRequest', // toggle modal detail card
       payload: { cardId }
@@ -23,7 +23,7 @@ class TrelloCard extends React.Component {
       type: 'comment/fetchCommentOfCard',
       payload: { cardId }
     });
-  }
+  };
 
   render() {
     const styles = {

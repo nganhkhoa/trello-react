@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { navigate } from 'gatsby';
 import classNames from 'classnames';
 import dateFormat from 'dateformat';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -77,7 +77,7 @@ const styles = theme => ({
   user: user.user,
   board: user.board
 }))
-@withStyles(styles)
+// @withStyles(styles)
 class BasicLayout extends React.Component {
   constructor(props) {
     super(props);
@@ -245,8 +245,8 @@ class BasicLayout extends React.Component {
   }
 }
 
-BasicLayout.propTypes = {
-  classes: PropTypes.object.isRequired
-};
+// BasicLayout.propTypes = {
+//   classes: PropTypes.object.isRequired
+// };
 
-export default BasicLayout;
+export default withStyles(styles)(BasicLayout);

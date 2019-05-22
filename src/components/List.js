@@ -21,7 +21,7 @@ class TrelloList extends React.Component {
     this.setState({ globalCards: props.globalCards });
   }
 
-  renderEditInput() {
+  renderEditInput = () => {
     const styles = {
       style: {
         width: '100%',
@@ -34,7 +34,7 @@ class TrelloList extends React.Component {
         overflow: 'hidden'
       }
     };
-    const { title } = this.sate;
+    const { title } = this.state;
     return (
       <form onSubmit={this.handleFinishEditing}>
         <input
@@ -48,7 +48,7 @@ class TrelloList extends React.Component {
         />
       </form>
     );
-  }
+  };
 
   handleFocus = e => {
     e.target.select();

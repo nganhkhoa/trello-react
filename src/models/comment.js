@@ -17,13 +17,20 @@ export const comment = {
         comments: comments
       };
     },
-
     putAfterEdit(state, { comment }) {
       // edit req and then call this
       const { comments } = state;
       return {
         ...state,
         comments: comments.map(x => (x._id === comment._id ? comment : x))
+      };
+    },
+    addCommentResolve(state, { comment }) {
+      const { comments } = state;
+      comments.push(comment);
+      return {
+        ...state,
+        comments
       };
     }
   },
@@ -43,7 +50,7 @@ export const comment = {
     },
     *editCommentRequest({ commentId, idUserEdit, content }) {
       console.log(`edit comment req`);
-      var { comment } = yield call(editCommentRequest, {
+      const { comment } = yield call(editCommentRequest, {
         data: {
           _id: commentId,
           idUserEdit,
@@ -59,12 +66,18 @@ export const comment = {
     },
     *addCommentRequest({ content, cardId, ownerId, fileUrl }) {
       console.log(`add comment req`);
-      yield call(addCommentRequest, {
+      const { comment } = yield call(addCommentRequest, {
         data: {
           content,
           cardId,
           ownerId,
           fileUrl
+        }
+      });
+      yield put({
+        type: 'comment/addCommentResolve',
+        payload: {
+          comment
         }
       });
     }

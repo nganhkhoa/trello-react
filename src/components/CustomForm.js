@@ -126,7 +126,11 @@ const customStyle = {
     marginTop: 10,
     marginBottom: 10
   },
-  margin: { width: 130, marginLeft: 9, marginTop: -15 }
+  margin: {
+    width: 130,
+    marginLeft: 9,
+    marginTop: -15
+  }
 };
 
 @connect(({ card, user, list, board }) => ({
