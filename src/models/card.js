@@ -81,25 +81,32 @@ export const card = {
       const { order: oldOrder, ...cardBeingMoved } = state.cards[
         sourceList
       ].find(x => x._id === cardId);
-      const moveUp = newOrder > oldOrder;
+      // const moveUp = newOrder > oldOrder;
 
       if (sourceList === destList) {
         console.log(`move ${oldOrder} -> ${newOrder}`);
+        // remove from list
+        let newSourceList = state.cards[sourceList].filter(
+          x => x._id !== cardId
+        );
+        // update index after removal
+        newSourceList = newSourceList.map(x => {
+          if (x.order > oldOrder) x.order -= 1;
+          return x;
+        });
+        // update index after add
+        newSourceList = newSourceList.map(x => {
+          if (x.order >= newOrder) x.order += 1;
+          return x;
+        });
+        // re-add
+        cardBeingMoved.order = newOrder;
+        newSourceList.push(cardBeingMoved);
         return {
           ...state,
           cards: {
             ...state.cards,
-            [sourceList]: state.cards[sourceList].map(x => {
-              if (x._id === cardId) x.order = newOrder;
-              else if (moveUp) {
-                // move card up
-                if (x.order >= newOrder && x.order < oldOrder) x.order += 1;
-              } else {
-                // move card down
-                if (x.order <= newOrder && x.order > oldOrder) x.order -= 1;
-              }
-              return x;
-            })
+            [sourceList]: newSourceList
           }
         };
       } else {
