@@ -51,9 +51,15 @@ export const board = {
         payload: { newBoard: board }
       });
     },
-    *editBoardRequest(payload) {
+    *editBoardRequest({ boardId, ownerId, boardName, background, modeView }) {
       const { board } = yield call(editBoardRequest, {
-        data: payload
+        data: {
+          _id: boardId,
+          ownerId,
+          boardName,
+          background,
+          modeView
+        }
       });
       yield put({
         type: 'board/set',
@@ -72,10 +78,14 @@ export const board = {
         }
       });
     },
-    *removeMemberRequest(payload) {
+    *removeMemberRequest({ boardId, idUserRemove, memberName }) {
       console.log(`remove member card request`);
       const { board } = yield call(removeMemberRequest, {
-        data: payload
+        data: {
+          _id: boardId,
+          idUserRemove,
+          memberName
+        }
       });
       yield put({
         type: 'board/set',

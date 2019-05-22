@@ -211,7 +211,7 @@ class Board extends React.Component {
     });
   };
 
-  changeState(kind) {
+  changeState = kind => {
     if (kind === 'background')
       this.setState({
         isBackgroundEdit: true,
@@ -244,60 +244,68 @@ class Board extends React.Component {
         isModeViewEdit: true,
         showFormAddMem: true
       });
-    console.log(this.state);
-  }
+    // console.log(this.state);
+  };
 
-  clickLabel(e) {
+  clickLabel = e => {
     const btn = document.getElementsByName('label');
     for (var x of btn) x.innerHTML = '';
     e.target.innerHTML = `<i style={{float:'right'}}>✔</i>`;
     this.setState({ background: e.target.style.backgroundColor });
     document.body.style.backgroundColor = e.target.style.backgroundColor;
-  }
+  };
 
-  saveChange(kind) {
-    const { boardInfo, currentUser, dispatch } = this.props;
+  saveChange = kind => {
+    const {
+      dispatch,
+      boardInfo: { _id: boardId },
+      currentUser: { _id: ownerId }
+    } = this.props;
     const { boardName, background } = this.state;
-    const body = {
-      _id: boardInfo._id,
-      ownerId: currentUser._id
-    };
+    let modeView;
 
-    if (kind === 'name') body.name = boardName;
-    if (kind === 'background') body.background = background;
     if (kind === 'modeViewTrue') {
-      body.modeView = true;
+      modeView = true;
       this.setState({ modeView: true });
     }
     if (kind === 'modeViewFalse') {
-      body.modeView = false;
+      modeView = false;
       this.setState({ modeView: false });
     }
     dispatch({
       type: 'board/editBoardRequest',
-      payload: body
+      payload: {
+        boardId,
+        ownerId,
+        boardName,
+        background,
+        modeView
+      }
     });
-  }
+  };
 
-  handleChange(e) {
+  handleChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     const name = e.target.name;
     this.setState({ [name]: value });
-  }
+  };
 
-  deleteMember(memberName) {
-    const { boardInfo, currentUser, dispatch } = this.props;
-    const body = {
-      _id: boardInfo._id,
-      memberName,
-      idUserRemove: currentUser._id
-    };
+  deleteMember = memberName => {
+    const {
+      dispatch,
+      boardInfo: { _id: boardId },
+      currentUser: { _id: idUserRemove }
+    } = this.props;
     dispatch({
       type: 'board/removeMemberRequest',
-      payload: { body }
+      payload: {
+        boardId,
+        idUserRemove,
+        memberName
+      }
     });
-  }
+  };
 
   render() {
     const mapColor = {
@@ -316,12 +324,13 @@ class Board extends React.Component {
       showFormAddMem,
       boardName,
       isMemEdit,
-      isModeViewEdit,
       modeView,
-      isBackgroundEdit,
       background,
+      isModeViewEdit,
+      isBackgroundEdit,
       isNameEdit
     } = this.state;
+
     return (
       <React.Fragment>
         <div>
@@ -331,8 +340,8 @@ class Board extends React.Component {
                 <div>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('name')}
@@ -341,26 +350,26 @@ class Board extends React.Component {
                   >
                     <i className="material-icons"> table_chart </i>
                     <span style={{ fontSize: 25, marginLeft: 3 }}>
-                      {' ' + this.state.boardName}
+                      {' ' + boardName}
                     </span>
                   </Button>
                   <Button
                     onMouseUp={() => this.changeState('mode')}
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     className={styles.button}
                     {...bindTrigger(popupState)}
                   >
                     <i className="material-icons"> lock </i>{' '}
-                    {this.state.modeView === true ? ' Công khai' : ' Riêng tư'}
+                    {modeView === true ? ' Công khai' : ' Riêng tư'}
                   </Button>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('background')}
@@ -372,8 +381,8 @@ class Board extends React.Component {
                   </Button>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('mem')}
@@ -470,7 +479,7 @@ class Board extends React.Component {
                     }}
                   >
                     <div style={customStyle.textField}>
-                      {this.state.isNameEdit === false ? null : (
+                      {isNameEdit === false ? null : (
                         <TextField
                           margin="dense"
                           label="Tên bảng"
