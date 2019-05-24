@@ -50,6 +50,7 @@ class AddButton extends Component {
       this.setState({
         text: ''
       });
+      this.closeForm();
     }
   };
 
@@ -69,6 +70,7 @@ class AddButton extends Component {
       this.setState({
         text: ''
       });
+      this.closeForm();
     }
   };
 
@@ -136,6 +138,12 @@ class AddButton extends Component {
               onBlur={this.closeForm}
               value={text}
               onChange={this.handleInputChange}
+              onKeyPress={ev => {
+                if (ev.key === 'Enter' && text !== '') {
+                  if (list) this.handleAddList();
+                  else this.handleAddCard();
+                }
+              }}
               style={{
                 resize: 'none',
                 width: '100%',

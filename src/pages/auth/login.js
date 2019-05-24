@@ -78,7 +78,8 @@ class Login extends React.Component {
     }
   }
 
-  onSubmit = () => {
+  onSubmit = e => {
+    e.preventDefault();
     const { dispatch } = this.props;
     this.setState({ alertAccount: '' });
     const { username, password } = this.state;
@@ -113,7 +114,7 @@ class Login extends React.Component {
               Login
             </Typography>
 
-            <form className={classes.form}>
+            <form className={classes.form} onSubmit={this.onSubmit}>
               <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="email">Username</InputLabel>
                 <Input
@@ -152,10 +153,10 @@ class Login extends React.Component {
               <Button
                 autoFocus
                 fullWidth
-                onClick={this.onSubmit}
                 variant="contained"
                 color="primary"
                 className={classes.submit}
+                type="submit"
               >
                 Login
               </Button>

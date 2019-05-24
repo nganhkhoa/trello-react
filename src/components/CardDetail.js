@@ -323,6 +323,12 @@ class CardDetail extends React.Component {
           value={value}
           minRows={2}
           onChange={this.handleInputChange}
+          onKeyPress={ev => {
+            if (ev.key === 'Enter' && value !== '') {
+              if (name === 'title') this.onSave(name);
+              else if (ev.shiftKey) this.onSave(name);
+            }
+          }}
           style={{
             ...customStyle.textarea,
             // TODO: make this does not span when press edit
@@ -670,6 +676,11 @@ class CardDetail extends React.Component {
                     onBlur={this.closeForm}
                     value={commentText}
                     onChange={this.handleInputChange}
+                    onKeyPress={ev => {
+                      if (ev.shiftKey && ev.key === 'Enter') {
+                        this.onClickAddComment();
+                      }
+                    }}
                     style={customStyle.textarea}
                     name="commentText"
                   />

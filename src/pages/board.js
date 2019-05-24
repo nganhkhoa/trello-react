@@ -487,6 +487,12 @@ class Board extends React.Component {
                           value={boardName}
                           fullWidth
                           onChange={this.handleChange}
+                          onKeyPress={ev => {
+                            if (ev.key === 'Enter' && boardName !== '') {
+                              this.saveChange('name');
+                              popupState.close();
+                            }
+                          }}
                           variant="outlined"
                           name="boardName"
                         />

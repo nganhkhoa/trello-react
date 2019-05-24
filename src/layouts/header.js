@@ -526,6 +526,12 @@ class PrimarySearchAppBar extends React.Component {
                             value={boardName}
                             fullWidth
                             onChange={this.handleChange}
+                            onKeyPress={ev => {
+                              if (ev.key === 'Enter' && boardName !== '') {
+                                popupState.close();
+                                this.createBoard();
+                              }
+                            }}
                             variant="outlined"
                             name="boardName"
                           />

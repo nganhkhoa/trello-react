@@ -264,6 +264,7 @@ export const card = {
 
     *addCardRequest({ title, ownerId, listId }) {
       console.log(`add card`);
+      // che mat thien ha
       const { card } = yield call(addCardRequest, {
         data: {
           title,
