@@ -20,7 +20,7 @@
     "dateformat": "^3.0.3",
     "dotenv": "^8.0.0",
     "downshift": "^3.2.10",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "gatsby": "^2.0.0",
     "gatsby-plugin-material-ui": "^1.2.5",
     "material-ui-pickers": "^2.2.4",
