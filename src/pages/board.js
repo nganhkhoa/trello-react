@@ -120,7 +120,8 @@ const customStyle = {
   },
   boardContainer: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    minHeight: '55vh'
   },
   textField: {
     marginLeft: 5,
