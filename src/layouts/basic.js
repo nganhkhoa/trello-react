@@ -1,27 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { navigate } from 'gatsby';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import dateFormat from 'dateformat';
+// import PropTypes from 'prop-types';
+
+import { withStyles } from '@material-ui/core/styles';
+
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
-import Header from '@/layouts/header';
-import CardHeader from '@material-ui/core/CardHeader';
-import IconButton from '@material-ui/core/IconButton';
-import dateFormat from 'dateformat';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Header from '@/layouts/header';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import Welcome from '@/components/Welcome';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+
 const styles = theme => ({
   appBar: {
     position: 'relative'
@@ -69,54 +72,71 @@ const styles = theme => ({
     padding: theme.spacing.unit * 6
   }
 });
+
 @connect(({ user }) => ({
   user: user.user,
   board: user.board
 }))
+// @withStyles(styles)
 class BasicLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { openDiaglogRemove: false, isLogin:props.user.username!==undefined }
+    const { user } = this.props;
+    this.state = {
+      openDiaglogRemove: false,
+      isLogin: user.username !== undefined
+    };
   }
-  componentWillReceiveProps(props)
-  {
-    if(props.user.username)this.setState({isLogin:true});
-    else this.setState({isLogin:false}); 
+
+  componentWillReceiveProps(props) {
+    const { user } = this.props;
+    if (user.username) this.setState({ isLogin: true });
+    else this.setState({ isLogin: false });
   }
+
   toLogin = () => {
     navigate(`/auth/login`);
   };
+
   toSignUp = () => {
     navigate(`/auth/signUp`);
   };
+
   onSubmit = boardId => {
     navigate(`/board/${boardId}`);
   };
-  handleClickOpen = _id => {
-    this.setState({ openDiaglogRemove: true, idPrepareRemove: _id });
+
+  handleClickOpen = idPrepareRemove => {
+    this.setState({ openDiaglogRemove: true, idPrepareRemove });
   };
+
   handleClose = () => {
     this.setState({ openDiaglogRemove: false });
   };
-  onDelete = _id => {
-    console.log(_id);
-    var { dispatch, user } = this.props;
-    var body = { ownerId: user._id };
+
+  onDelete = boardId => {
+    const {
+      dispatch,
+      user: { _id: ownerId }
+    } = this.props;
     dispatch({
       type: 'board/deleteBoardRequest',
-      payload: { _id, body }
+      payload: { boardId, ownerId }
     });
     this.setState({ openDiaglogRemove: false });
   };
+
   render() {
-    const {  classes, board = [] } = this.props;
-    var {isLogin} =this.state;  
+    const { classes, board = [] } = this.props;
+    const { isLogin, openDiaglogRemove, idPrepareRemove } = this.state;
     return (
       <React.Fragment>
         <CssBaseline />
         <Header />
         <main>
-          <div className={classes.heroUnit}>{isLogin===false?<Welcome/>:null} </div>
+          <div className={classes.heroUnit}>
+            {isLogin === false ? <Welcome /> : null}{' '}
+          </div>
           {this.props.children !== undefined ? (
             this.props.children
           ) : (
@@ -126,7 +146,7 @@ class BasicLayout extends React.Component {
                   <Grid container spacing={40}>
                     {board.map(
                       ({
-                        _id,
+                        _id: boardId,
                         background,
                         dateCreated,
                         list,
@@ -135,46 +155,54 @@ class BasicLayout extends React.Component {
                         modelView,
                         ownerId
                       }) => (
-                          <Grid item key={_id} sm={6} md={4} lg={3}>
-                            <Card
-                              className={classes.card}
+                        <Grid item key={boardId} sm={6} md={4} lg={3}>
+                          <Card className={classes.card}>
+                            <CardHeader
+                              action={
+                                <IconButton
+                                  onClick={() => this.handleClickOpen(boardId)}
+                                >
+                                  <DeleteForeverIcon />
+                                </IconButton>
+                              }
+                              title={name}
+                              subheader={dateFormat(
+                                new Date(dateCreated),
+                                'dddd, mmmm dS, yyyy'
+                              )}
+                              style={{ backgroundColor: '#e0ddd0' }}
+                            />
+
+                            <CardMedia
+                              className={classes.cardMedia}
+                              image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
+                              title="Image title"
+                              onClick={() => this.onSubmit(boardId)}
+                            />
+                            <CardContent
+                              className={classes.cardContent}
+                              style={{ backgroundColor: '#e0ddd0' }}
                             >
-                              <CardHeader
-                                action={
-                                  <IconButton onClick={()=>this.handleClickOpen(_id)}>
-                                    <DeleteForeverIcon />
-                                  </IconButton>
-                                }
-                                title={name}
-                                subheader={dateFormat(new Date(dateCreated), "dddd, mmmm dS, yyyy")}
-                                style={{ backgroundColor: '#e0ddd0' }}
-                              />
-
-
-                              <CardMedia
-                                className={classes.cardMedia}
-                                image="https://design.trello.com/img/mascots/mascots-graphic-1@2x.png"
-                                title="Image title"
-                                onClick={() => this.onSubmit(_id)}
-                              />
-                              <CardContent className={classes.cardContent} style={{ backgroundColor: '#e0ddd0' }}>
-                                <Typography style={{ fontSize: 30 }}>
-                                  <i className="material-icons" style={{ fontSize: 40 }}>
-                                    person_outline</i> {members.length}  </Typography>
-                              </CardContent>
-                            </Card>
-                          </Grid>
-                        )
+                              <Typography style={{ fontSize: 30 }}>
+                                <i
+                                  className="material-icons"
+                                  style={{ fontSize: 40 }}
+                                >
+                                  person_outline
+                                </i>{' '}
+                                {members.length}{' '}
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      )
                     )}
                   </Grid>
                 </div>
               </div>
             </div>
           )}
-          <Dialog
-            open={this.state.openDiaglogRemove}
-            onClose={this.handleClose}
-          >
+          <Dialog open={openDiaglogRemove} onClose={this.handleClose}>
             <DialogTitle>Remove board</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -187,7 +215,7 @@ class BasicLayout extends React.Component {
               </Button>
               <Button
                 onClick={() => {
-                  this.onDelete(this.state.idPrepareRemove);
+                  this.onDelete(idPrepareRemove);
                 }}
                 color="primary"
               >
@@ -217,8 +245,8 @@ class BasicLayout extends React.Component {
   }
 }
 
-BasicLayout.propTypes = {
-  classes: PropTypes.object.isRequired
-};
+// BasicLayout.propTypes = {
+//   classes: PropTypes.object.isRequired
+// };
 
 export default withStyles(styles)(BasicLayout);

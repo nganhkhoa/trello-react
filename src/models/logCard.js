@@ -17,9 +17,9 @@ export const logCard = {
   },
   effects: {
     *fetchLogOfCard({ cardId }) {
-      console.log(`Fetching log  of card #${cardId} `);
+      console.log(`Fetching log  of card #${cardId}`);
       const { logCards } = yield call(fetchLogOfCard, {
-        query: `${cardId}/logCards`
+        query: cardId
       });
       yield put({
         type: 'logCard/put',

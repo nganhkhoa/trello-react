@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Droppable } from 'react-beautiful-dnd';
+
+import Icon from '@material-ui/core/Icon';
 
 import TrelloCard from '@/components/Card';
 import AddButton from '@/components/AddButton';
-import { Droppable } from 'react-beautiful-dnd';
-import Icon from '@material-ui/core/Icon';
 
 @connect(({ card }) => ({
   globalCards: card.cards
@@ -20,7 +21,7 @@ class TrelloList extends React.Component {
     this.setState({ globalCards: props.globalCards });
   }
 
-  renderEditInput() {
+  renderEditInput = () => {
     const styles = {
       style: {
         width: '100%',
@@ -33,20 +34,21 @@ class TrelloList extends React.Component {
         overflow: 'hidden'
       }
     };
+    const { title } = this.state;
     return (
       <form onSubmit={this.handleFinishEditing}>
         <input
           type="text"
           style={styles.style}
-          value={this.state.title}
+          value={title}
           onChange={this.handleOnchange}
-          autoFocus
           onFocus={this.handleFocus}
           onBlur={this.handleFinishEditing}
+          autoFocus
         />
       </form>
     );
-  }
+  };
 
   handleFocus = e => {
     e.target.select();
@@ -73,6 +75,7 @@ class TrelloList extends React.Component {
       }
     });
   };
+
   setIsEditing = () => {
     this.setState({
       isEditing: true
@@ -86,6 +89,7 @@ class TrelloList extends React.Component {
       payload: { _id: idList }
     });
   };
+
   render() {
     const styles = {
       container: {
@@ -118,9 +122,10 @@ class TrelloList extends React.Component {
     };
 
     const { idList } = this.props;
-    const { globalCards } = this.state;
+    const { title, isEditing, globalCards } = this.state;
     const cards = globalCards[idList] ? globalCards[idList] : [];
-    cards.sort((x, y) => (x.order > y.order ? 1 : -1)); 
+    cards.sort((x, y) => (x.order > y.order ? 1 : -1));
+
     return (
       <Droppable droppableId={String(idList)}>
         {provided => (
@@ -129,14 +134,14 @@ class TrelloList extends React.Component {
             ref={provided.innerRef}
             style={styles.container}
           >
-            {this.state.isEditing ? (
+            {isEditing ? (
               this.renderEditInput()
             ) : (
               <div
                 onClick={() => this.setIsEditing()}
                 style={styles.titleContainer}
               >
-                <h4 style={styles.styleHeader}>{this.state.title}</h4>
+                <h4 style={styles.styleHeader}>{title}</h4>
                 <Icon style={styles.delete} onClick={this.handleDelete}>
                   delete
                 </Icon>
@@ -146,6 +151,7 @@ class TrelloList extends React.Component {
             {cards.map((card, index) => (
               <TrelloCard key={card._id} card={card} index={index} />
             ))}
+            {provided.placeholder}
             <AddButton idList={idList} color="red" />
           </div>
         )}

@@ -17,15 +17,21 @@ export const comment = {
         comments: comments
       };
     },
-
     putAfterEdit(state, { comment }) {
       // edit req and then call this
-      var tem = [];
-      for (var x of state.comments) {
-        if (x._id === comment._id) tem.push(comment);
-        else tem.push(x);
-      }
-      return { ...state, comments: tem };
+      const { comments } = state;
+      return {
+        ...state,
+        comments: comments.map(x => (x._id === comment._id ? comment : x))
+      };
+    },
+    addCommentResolve(state, { comment }) {
+      const { comments } = state;
+      comments.push(comment);
+      return {
+        ...state,
+        comments
+      };
     }
   },
   effects: {
@@ -42,11 +48,13 @@ export const comment = {
         }
       });
     },
-    *editCommentRequest({ body }) {
-      console.log(`edit comment req `);
-      var { comment } = yield call(editCommentRequest, {
+    *editCommentRequest({ commentId, idUserEdit, content }) {
+      console.log(`edit comment req`);
+      const { comment } = yield call(editCommentRequest, {
         data: {
-          body
+          _id: commentId,
+          idUserEdit,
+          content
         }
       });
       yield put({
@@ -56,11 +64,20 @@ export const comment = {
         }
       });
     },
-    *addCommentRequest({ body }) {
-      console.log(`add comment req `);
-      yield call(addCommentRequest, {
+    *addCommentRequest({ content, cardId, ownerId, fileUrl }) {
+      console.log(`add comment req`);
+      const { comment } = yield call(addCommentRequest, {
         data: {
-          body
+          content,
+          cardId,
+          ownerId,
+          fileUrl
+        }
+      });
+      yield put({
+        type: 'comment/addCommentResolve',
+        payload: {
+          comment
         }
       });
     }

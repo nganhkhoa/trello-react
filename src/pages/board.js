@@ -1,37 +1,41 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Router } from '@reach/router';
-import Popover from '@material-ui/core/Popover';
-import Button from '@material-ui/core/Button';
-import PrivateRoute from '@/components/PrivateRoute';
-import ProtectedView from '@/components/ProtectedView';
-import BasicLayout from '@/layouts/basic';
-import TrelloList from '@/components/List';
-import List from '@material-ui/core/List';
-import CardDetail from '@/components/CardDetail';
-import AddButton from '@/components/AddButton';
 import { DragDropContext } from 'react-beautiful-dnd';
-import TextField from '@material-ui/core/TextField';
-import ListItem from '@material-ui/core/ListItem';
-import Avatar from '@material-ui/core/Avatar';
-import deepPurple from '@material-ui/core/colors/deepPurple';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import DoneIcon from '@material-ui/icons/Done';
-import AutoCompleteTextField from '@/components/AutoCompleteTextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import { Router } from '@reach/router';
 
 import PopupState, {
   bindTrigger,
   bindPopover
 } from 'material-ui-popup-state/index';
+import deepPurple from '@material-ui/core/colors/deepPurple';
+
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import DoneIcon from '@material-ui/icons/Done';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Popover from '@material-ui/core/Popover';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+
+import AddButton from '@/components/AddButton';
+import AutoCompleteTextField from '@/components/AutoCompleteTextField';
+import BasicLayout from '@/layouts/basic';
+import CardDetail from '@/components/CardDetail';
+import PrivateRoute from '@/components/PrivateRoute';
+import ProtectedView from '@/components/ProtectedView';
+import TrelloList from '@/components/List';
+
 const styles = {
-  button: {
-    margin: 1
-  },
+  // button: {
+  //   margin: 1
+  // },
+  button: '',
   input: {
     display: 'none'
   },
@@ -106,6 +110,7 @@ const styles = {
     fontWeight: 'bold'
   }
 };
+
 const customStyle = {
   root: {
     flexGrow: 1
@@ -134,6 +139,7 @@ const customStyle = {
     backgroundColor: deepPurple[500]
   }
 };
+
 @connect(({ board, list, user, card }) => ({
   boardInfo: board.boardInfo,
   lists: list.lists,
@@ -145,7 +151,7 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     const { boardInfo = {} } = props;
-    var { modeView, name, background } = boardInfo;
+    const { modeView, name, background } = boardInfo;
     this.state = {
       boardName: name,
       background,
@@ -157,16 +163,19 @@ class Board extends React.Component {
       showFormAddMem: true
     };
   }
+
   componentWillReceiveProps(props) {
     const { boardInfo = {}, showFormAddMem } = props;
-    var { modeView, name, background } = boardInfo;
+    const { modeView, name, background } = boardInfo;
     document.body.style.backgroundColor = background;
     this.setState({ boardName: name, background, modeView, showFormAddMem });
   }
+
   componentWillUnmount() {
     // reset defaut
     document.body.style.backgroundColor = 'white';
   }
+
   componentDidMount() {
     const { boardId, dispatch } = this.props;
     dispatch({
@@ -175,25 +184,33 @@ class Board extends React.Component {
         id: boardId
       }
     });
-    dispatch.user.fetchCurrentUser();
+    dispatch({
+      type: 'user/fetchCurrentUser',
+      payload: {}
+    });
   }
+
   onDragEnd = result => {
     const { source, destination, draggableId } = result;
     if (!destination) return;
 
+    const {
+      currentUser: { _id: userId }
+    } = this.props;
     const { droppableId: sourceList } = source;
-    const { droppableId: destList, index: order } = destination;
+    const { droppableId: destList, index } = destination;
     this.props.dispatch({
       type: 'card/moveCardRequest',
       payload: {
-        _id: draggableId,
+        cardId: draggableId,
         newListId: destList,
         oldListId: sourceList,
-        idUserMove: this.props.currentUser._id,
-        order
+        idUserMove: userId,
+        order: index
       }
     });
   };
+
   changeState = kind => {
     if (kind === 'background')
       this.setState({
@@ -227,57 +244,71 @@ class Board extends React.Component {
         isModeViewEdit: true,
         showFormAddMem: true
       });
-    console.log(this.state);
+    // console.log(this.state);
   };
+
   clickLabel = e => {
-    var btn = document.getElementsByName('label');
+    const btn = document.getElementsByName('label');
     for (var x of btn) x.innerHTML = '';
     e.target.innerHTML = `<i style={{float:'right'}}>✔</i>`;
     this.setState({ background: e.target.style.backgroundColor });
     document.body.style.backgroundColor = e.target.style.backgroundColor;
   };
+
   saveChange = kind => {
-    var { boardInfo, currentUser, dispatch } = this.props;
-    var { boardName, background } = this.state;
-    var body = {
-      _id: boardInfo._id,
-      ownerId: currentUser._id
-    };
-    if (kind === 'name') body.name = boardName;
-    if (kind === 'background') body.background = background;
+    const {
+      dispatch,
+      boardInfo: { _id: boardId },
+      currentUser: { _id: ownerId }
+    } = this.props;
+    const { boardName, background } = this.state;
+    let modeView;
+
     if (kind === 'modeViewTrue') {
-      body.modeView = true;
+      modeView = true;
       this.setState({ modeView: true });
     }
     if (kind === 'modeViewFalse') {
-      body.modeView = false;
+      modeView = false;
       this.setState({ modeView: false });
     }
     dispatch({
       type: 'board/editBoardRequest',
-      payload: body
+      payload: {
+        boardId,
+        ownerId,
+        boardName,
+        background,
+        modeView
+      }
     });
   };
+
   handleChange = e => {
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    var name = e.target.name;
+    const name = e.target.name;
     this.setState({ [name]: value });
   };
+
   deleteMember = memberName => {
-    var { boardInfo, currentUser, dispatch } = this.props;
-    var body = {
-      _id: boardInfo._id,
-      memberName,
-      idUserRemove: currentUser._id
-    };
+    const {
+      dispatch,
+      boardInfo: { _id: boardId },
+      currentUser: { _id: idUserRemove }
+    } = this.props;
     dispatch({
       type: 'board/removeMemberRequest',
-      payload: { body }
+      payload: {
+        boardId,
+        idUserRemove,
+        memberName
+      }
     });
   };
+
   render() {
-    var mapColor = {
+    const mapColor = {
       white: 'blue',
       red: 'white',
       orange: 'green',
@@ -288,7 +319,18 @@ class Board extends React.Component {
     };
     const { lists = [], boardInfo = {} } = this.props;
     const { _id: boardId } = boardInfo;
-    var members = boardInfo.members || [];
+    const members = boardInfo.members || [];
+    const {
+      showFormAddMem,
+      boardName,
+      isMemEdit,
+      modeView,
+      background,
+      isModeViewEdit,
+      isBackgroundEdit,
+      isNameEdit
+    } = this.state;
+
     return (
       <React.Fragment>
         <div>
@@ -298,8 +340,8 @@ class Board extends React.Component {
                 <div>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('name')}
@@ -308,26 +350,26 @@ class Board extends React.Component {
                   >
                     <i className="material-icons"> table_chart </i>
                     <span style={{ fontSize: 25, marginLeft: 3 }}>
-                      {' ' + this.state.boardName}
+                      {' ' + boardName}
                     </span>
                   </Button>
                   <Button
                     onMouseUp={() => this.changeState('mode')}
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     className={styles.button}
                     {...bindTrigger(popupState)}
                   >
                     <i className="material-icons"> lock </i>{' '}
-                    {this.state.modeView === true ? ' Công khai' : ' Riêng tư'}
+                    {modeView === true ? ' Công khai' : ' Riêng tư'}
                   </Button>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('background')}
@@ -339,8 +381,8 @@ class Board extends React.Component {
                   </Button>
                   <Button
                     style={{
-                      color: mapColor[this.state.background]
-                        ? mapColor[this.state.background]
+                      color: mapColor[background]
+                        ? mapColor[background]
                         : 'white'
                     }}
                     onMouseUp={() => this.changeState('mem')}
@@ -352,22 +394,25 @@ class Board extends React.Component {
                   <Button>
                     {members.map(
                       ({
-                        _id,
-                        username,
-                        imageUrl = 'http://tinyurl.com/y34hpqbr'
+                        _id: memberId,
+                        username: memberUsername,
+                        imageUrl: memberImageUrl = 'http://tinyurl.com/y34hpqbr'
                       }) => {
                         return (
-                          <PopupState variant="popover" key={username}>
+                          <PopupState variant="popover" key={memberUsername}>
                             {popupState => (
                               <div>
-                                <Tooltip title={username} placement="bottom">
+                                <Tooltip
+                                  title={memberUsername}
+                                  placement="bottom"
+                                >
                                   <Avatar
                                     {...bindTrigger(popupState)}
-                                    key={username}
-                                    src={imageUrl}
+                                    key={memberUsername}
+                                    src={memberImageUrl}
                                     style={customStyle.purpleAvatar}
                                   >
-                                    {username.substring(0, 2)}
+                                    {memberUsername.substring(0, 2)}
                                   </Avatar>
                                 </Tooltip>
                                 <Popover
@@ -389,14 +434,14 @@ class Board extends React.Component {
                                   >
                                     <CardContent>
                                       <Avatar
-                                        src={imageUrl}
+                                        src={memberImageUrl}
                                         style={customStyle.purpleAvatar}
                                       >
-                                        {username.substring(0, 2)}
+                                        {memberUsername.substring(0, 2)}
                                       </Avatar>
                                       <Typography style={customStyle.title}>
                                         {' '}
-                                        {username}
+                                        {memberUsername}
                                       </Typography>
                                       <Button
                                         style={customStyle.button}
@@ -404,9 +449,9 @@ class Board extends React.Component {
                                         variant="contained"
                                         color="primary"
                                         onClick={() =>
-                                          this.deleteMember(username)
+                                          this.deleteMember(memberUsername)
                                         }
-                                        id={_id}
+                                        id={memberId}
                                       >
                                         Gỡ
                                       </Button>
@@ -421,7 +466,7 @@ class Board extends React.Component {
                     )}
                   </Button>
                 </div>
-                {this.state.showFormAddMem === false ? null : (
+                {showFormAddMem === false ? null : (
                   <Popover
                     {...bindPopover(popupState)}
                     anchorOrigin={{
@@ -434,23 +479,29 @@ class Board extends React.Component {
                     }}
                   >
                     <div style={customStyle.textField}>
-                      {this.state.isNameEdit === false ? null : (
+                      {isNameEdit === false ? null : (
                         <TextField
                           margin="dense"
                           label="Tên bảng"
                           style={styles.textField}
-                          value={this.state.boardName}
+                          value={boardName}
                           fullWidth
                           onChange={this.handleChange}
+                          onKeyPress={ev => {
+                            if (ev.key === 'Enter' && boardName !== '') {
+                              this.saveChange('name');
+                              popupState.close();
+                            }
+                          }}
                           variant="outlined"
                           name="boardName"
                         />
                       )}
-                      {this.state.isMemEdit === false ? null : (
+                      {isMemEdit === false ? null : (
                         <AutoCompleteTextField kind="board" />
                       )}
 
-                      {this.state.isModeViewEdit === false ? null : (
+                      {isModeViewEdit === false ? null : (
                         <List>
                           <ListItem
                             button
@@ -462,11 +513,7 @@ class Board extends React.Component {
                             <ListItemText inset primary="Công khai" />
                             <ListItemIcon>
                               {' '}
-                              {this.state.modeView === true ? (
-                                <DoneIcon />
-                              ) : (
-                                ' '
-                              )}{' '}
+                              {modeView === true ? <DoneIcon /> : ' '}{' '}
                             </ListItemIcon>
                           </ListItem>
                           <ListItem
@@ -479,16 +526,12 @@ class Board extends React.Component {
                             <ListItemText inset primary="Riêng tư" />
                             <ListItemIcon>
                               {' '}
-                              {this.state.modeView === false ? (
-                                <DoneIcon />
-                              ) : (
-                                ' '
-                              )}{' '}
+                              {modeView === false ? <DoneIcon /> : ' '}{' '}
                             </ListItemIcon>
                           </ListItem>{' '}
                         </List>
                       )}
-                      {this.state.isBackgroundEdit === false ? null : (
+                      {isBackgroundEdit === false ? null : (
                         <div>
                           <Button
                             onClick={this.clickLabel}
@@ -500,7 +543,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'red' ? (
+                            {background === 'red' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -516,7 +559,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'yellow' ? (
+                            {background === 'yellow' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -532,7 +575,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'orange' ? (
+                            {background === 'orange' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -549,7 +592,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'blue' ? (
+                            {background === 'blue' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -565,7 +608,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'green' ? (
+                            {background === 'green' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -581,7 +624,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === '#d27af4' ? (
+                            {background === '#d27af4' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -598,7 +641,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === '#1eedab' ? (
+                            {background === '#1eedab' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -614,7 +657,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'gray' ? (
+                            {background === 'gray' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -630,7 +673,7 @@ class Board extends React.Component {
                               width: 100
                             }}
                           >
-                            {this.state.background === 'white' ? (
+                            {background === 'white' ? (
                               <i style={{ float: 'right' }}>✔</i>
                             ) : (
                               ' '
@@ -638,24 +681,21 @@ class Board extends React.Component {
                           </Button>
                         </div>
                       )}
-                      {(this.state.isMemEdit || this.state.isModeViewEdit) ===
-                      true ? null : (
+                      {(isMemEdit || isModeViewEdit) === true ? null : (
                         <Button
                           style={customStyle.button}
                           size="small"
                           variant="contained"
                           color="primary"
                           onClick={() => {
-                            if (
-                              this.state.isNameEdit &&
-                              this.state.boardName !== ''
-                            ) {
-                              popupState.close();
+                            if (isNameEdit && boardName !== '') {
                               this.saveChange('name');
-                            } else if (this.state.isBackgroundEdit) {
+                            } else if (isBackgroundEdit) {
                               this.saveChange('background');
-                              popupState.close();
+                            } else {
+                              return;
                             }
+                            popupState.close();
                           }}
                         >
                           Lưu
@@ -671,22 +711,20 @@ class Board extends React.Component {
         <DragDropContext onDragEnd={this.onDragEnd}>
           <div>
             <div style={customStyle.boardContainer}>
-              {lists.map(({ name, cards, _id }) => (
-                <TrelloList
-                  title={name}
-                  cards={cards}
-                  key={_id}
-                  idList={_id}
-                  idBoard={boardId}
-                />
-              ))}
+              {lists.map(
+                ({ name: listTitle, cards: listCards, _id: listId }) => (
+                  <TrelloList
+                    title={listTitle}
+                    cards={listCards}
+                    key={listId}
+                    idList={listId}
+                    idBoard={boardId}
+                  />
+                )
+              )}
               <AddButton
                 list
-                color={
-                  mapColor[this.state.background]
-                    ? mapColor[this.state.background]
-                    : 'white'
-                }
+                color={mapColor[background] ? mapColor[background] : 'white'}
               />
               <CardDetail />
             </div>
@@ -697,18 +735,18 @@ class Board extends React.Component {
   }
 }
 
-// board is pass through props,
+// boardId is pass through props,
 // by PrivateRoute from Router
-const BoardContainer = ({ board }) => (
+const BoardContainer = ({ boardId }) => (
   <ProtectedView allowedRole={['user', 'admin']}>
-    <Board boardId={board} />
+    <Board boardId={boardId} />
   </ProtectedView>
 );
 
 const BoardView = () => (
   <BasicLayout>
     <Router>
-      <PrivateRoute path="/board/:board" component={BoardContainer} />
+      <PrivateRoute path="/board/:boardId" component={BoardContainer} />
     </Router>
   </BasicLayout>
 );

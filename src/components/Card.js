@@ -1,28 +1,30 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Card from '@material-ui/core/Card';
-import Typography from '@material-ui/core/Typography';
-import CardContent from '@material-ui/core/CardContent';
-import { Button } from '@material-ui/core';
 import { Draggable } from 'react-beautiful-dnd';
 
-@connect(null)
+import { Button } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+
+@connect(state => ({}))
 class TrelloCard extends React.Component {
   onClick = e => {
-    var { dispatch, card } = this.props;
+    const { dispatch, card: cardId } = this.props;
     dispatch({
       type: 'card/getCardRequest', // toggle modal detail card
-      payload: { _id: card._id }
+      payload: { cardId }
     });
     dispatch({
       type: 'logCard/fetchLogOfCard',
-      payload: { cardId: card._id }
+      payload: { cardId }
     });
     dispatch({
       type: 'comment/fetchCommentOfCard',
-      payload: { cardId: card._id }
+      payload: { cardId }
     });
   };
+
   render() {
     const styles = {
       cardContainer: {
@@ -39,17 +41,21 @@ class TrelloCard extends React.Component {
       }
     };
 
-    const { card, index } = this.props;
     const {
-      title = '',
-      members = [],
-      comments = [],
-      labels = [],
-      archived = false,
-      order
-    } = card;
+      card: {
+        _id: cardId,
+        title = '',
+        members = [],
+        comments = [],
+        labels = [],
+        archived = false,
+        order
+      },
+      index
+    } = this.props;
+
     return (
-      <Draggable draggableId={String(card._id)} index={index}>
+      <Draggable draggableId={String(cardId)} index={index}>
         {provided => (
           <div
             ref={provided.innerRef}
@@ -59,9 +65,7 @@ class TrelloCard extends React.Component {
             <Card style={styles.cardContainer} onClick={this.onClick}>
               <CardContent>
                 <Typography gutterBottom style={styles.title}>
-                  {order}
-                  {'. '}
-                  {title}
+                  {`${order}. ${title}`}
                   {archived ? (
                     <i className="material-icons" style={{ fontSize: 20 }}>
                       {' '}
@@ -82,11 +86,11 @@ class TrelloCard extends React.Component {
                   </i>{' '}
                   {comments.length}
                 </Typography>
-                {labels.map(lb => {
+                {labels.map(({ labelColor }) => {
                   return (
                     <Button
-                      key={lb.labelColor}
-                      style={{ backgroundColor: lb.labelColor, width: 10 }}
+                      key={labelColor}
+                      style={{ backgroundColor: labelColor, width: 10 }}
                     >
                       {' '}
                     </Button>

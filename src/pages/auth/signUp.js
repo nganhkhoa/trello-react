@@ -2,16 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { navigate } from 'gatsby';
 import PropTypes from 'prop-types';
+
+import withStyles from '@material-ui/core/styles/withStyles';
+
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import withStyles from '@material-ui/core/styles/withStyles';
 
 import Header from '@/layouts/header';
 
@@ -56,6 +58,7 @@ const customStyles = {
 @connect(({ user }) => ({
   error: user.error
 }))
+@withStyles(styles)
 class SignUp extends React.Component {
   state = {
     username: '',
@@ -66,13 +69,14 @@ class SignUp extends React.Component {
     alertUsername: '',
     alertEmail: ''
   };
+
   componentWillReceiveProps(props) {
-    var { error } = props;
-    if (error) {
-      if (error.alertUsername)
-        this.setState({ alertUsername: error.alertUsername });
+    const { error } = props;
+    if (error && error.alertUsername) {
+      this.setState({ alertUsername: error.alertUsername });
     }
   }
+
   onSubmit = e => {
     e.preventDefault();
     this.setState({ alertPassword: '', alertUsername: '', alertEmail: '' });
@@ -93,9 +97,10 @@ class SignUp extends React.Component {
       [event.target.name]: event.target.value
     });
   };
+
   render() {
-    var { classes } = this.props;
-    var { alertPassword, alertUsername, alertEmail } = this.state;
+    const { classes } = this.props;
+    const { alertPassword, alertUsername, alertEmail } = this.state;
     return (
       <React.Fragment>
         <Header />
@@ -210,4 +215,4 @@ SignUp.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SignUp);
+export default SignUp;

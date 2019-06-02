@@ -23,19 +23,19 @@ export const editBoardRequest = async ({ data }) => {
 export const addMemberRequest = async ({ data }) => {
   return request(`${BOARD}/add-member`, {
     method: POST,
-    data: data.body
+    data
   });
 };
 
 export const removeMemberRequest = async ({ data }) => {
   return request(`${BOARD}/remove-member`, {
     method: POST,
-    data: data.body
+    data
   });
 };
-export const deleteBoardRequest = async ({ params, data }) => {
-  return request(`${BOARD}/${params._id}`, {
+export const deleteBoardRequest = async ({ query, data }) => {
+  return request(`${BOARD}/${query}`, {
     method: DELETE,
-    data: data.body
+    data
   });
 };

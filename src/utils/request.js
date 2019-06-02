@@ -55,7 +55,10 @@ const checkStatus = response => {
  *  {
  *    METHOD, // GET/POST/PUT/DELETE
  *    DATA: {
- *      // data to post
+ *      // body data
+ *    },
+ *    PARAMS: {
+ *      // get parameters
  *    }
  *  }
  * )

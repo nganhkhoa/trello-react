@@ -1,11 +1,14 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
-import deepOrange from '@material-ui/core/colors/deepOrange';
 import dateFormat from 'dateformat';
+
+import deepOrange from '@material-ui/core/colors/deepOrange';
 import deepPurple from '@material-ui/core/colors/deepPurple';
-@connect(null)
+
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+
+@connect(state => ({}))
 class LogCard extends React.Component {
   render() {
     const styles = {
@@ -31,6 +34,7 @@ class LogCard extends React.Component {
       }
     };
     const { action, imageUrl, username, dateCreated } = this.props;
+
     return (
       <Fragment>
         <hr />
