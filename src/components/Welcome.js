@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { navigate } from 'gatsby';
-
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';

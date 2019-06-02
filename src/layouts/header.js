@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { navigate } from 'gatsby';
-
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import PopupState, {
@@ -19,13 +18,22 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MenuIcon from '@material-ui/icons/Menu';
+// import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Popover from '@material-ui/core/Popover';
 import TextField from '@material-ui/core/TextField';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import SvgIcon from '@material-ui/core/SvgIcon';
+
+function HomeIcon(props) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+    </SvgIcon>
+  );
+}
 
 const styles = theme => ({
   root: {
@@ -475,7 +483,7 @@ class PrimarySearchAppBar extends React.Component {
               color="inherit"
               aria-label="Open drawer"
             >
-              <MenuIcon />
+              <HomeIcon fontSize="large" onClick={() => navigate('/')} />
             </IconButton>
             <Typography
               className={classes.title}
